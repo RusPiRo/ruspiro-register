@@ -27,13 +27,13 @@
 //! // define a single register without any specific fields, like the free running system timer counter low value
 //! // of the Raspberry Pi 3. Valid register size types are u8, u16, u32, u64.
 //! define_register! {
-//!    TIMERCLO: ReadOnly<u32>, 0x3F00_3004 => []
+//!    TIMERCLO: ReadOnly<u32> @ 0x3F00_3004 => []
 //! };
 //! 
 //! // define a list of registers that may ore may not contain a specific field configuration
 //! define_registers! [
-//!     TIMERCHI: ReadOnly<u32>, 0x3F00_3008 => [],
-//!     I2C_C: ReadWrite<u32>,   0x3F80_4000 => [
+//!     TIMERCHI: ReadOnly<u32> @ 0x3F00_3008 => [],
+//!     I2C_C: ReadWrite<u32>   @ 0x3F80_4000 => [
 //!         ENABLE     OFFSET(15),
 //!         IRQ_RX     OFFSET(10),
 //!         IRQ_TX     OFFSET(9),
