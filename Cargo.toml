@@ -4,9 +4,9 @@ authors = ["André Borrmann <pspwizard@gmx.de>"]
 version = "0.0.1" # remember to update html_root_url
 description = ""
 license = "LICENSE"
-repository = "https://github.com/RusPiRo/ruspiro-register"
+repository = "https://github.com/RusPiRo/ruspiro-register/tree/v0.0.1"
 readme = "README.md"
-keywords = ["RusPiRo", "MMIO", "register"]
+keywords = ["RusPiRo", "MMIO", "register", "raspberry-pi"]
 categories = ["no_std"]
 edition = "2018"
 
