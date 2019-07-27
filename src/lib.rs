@@ -17,7 +17,7 @@
 //! To use the crate add the following dependency to your Cargo.toml file:
 //! ```
 //! [dependencies]
-//! ruspiro-register = { git = 'https://github.com/RusPiRo/ruspiro-register' }
+//! ruspiro-register = { git = "https://github.com/RusPiRo/ruspiro-register", tag = "v0.0.1" }
 //! ```
 //! 
 //! In your code you can define register as follows:

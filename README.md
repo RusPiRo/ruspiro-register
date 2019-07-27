@@ -7,7 +7,7 @@ This Crate provides easy to use and compile time safe access abstraction to MMIO
 To use this crate simply add the dependency to your ``Cargo.toml`` file:
 ```
 [dependencies]
-ruspiro-register = { git = 'https://github.com/RusPiRo/ruspiro-register/tree/v0.0.1' }
+ruspiro-register = { git = "https://github.com/RusPiRo/ruspiro-register", tag = "v0.0.1" }
 ```
 
 In any rust file the register could be defined with their access type, size, address and optional a detailed field definition.
