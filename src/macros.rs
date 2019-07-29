@@ -7,7 +7,7 @@
 
 //! # Register definition macros
 //! 
-//! Define macros to define syntactic sugure to define MMIO register representation.
+//! Provide macros to define MMIO register representation.
 //! 
 
 /// Helper macro to define the fields a register may contain of.<br>
@@ -38,7 +38,8 @@ macro_rules! register_fields {
 /// 
 /// ```
 /// # use rubo_register::*;
-/// define_register!( GPFSEL0: ReadWrite<u32> @ 0x3F20_0000 => []);
+/// define_register!( GPFSEL0: ReadWrite<u32> @ 0x3F20_0000 => [] );
+/// 
 /// # fn main() {
 /// let _ = GPFSEL0::Register.get();
 /// # }
@@ -47,7 +48,8 @@ macro_rules! register_fields {
 /// ```
 /// const GPIO_BASE:u32 = 0x3F00_0000;
 /// 
-/// define_register!(GPFSEL1: ReadWrite<u32> @ GPIO_BASE + 0x04 => []);
+/// define_register!( GPFSEL1: ReadWrite<u32> @ GPIO_BASE + 0x04 => [] );
+/// 
 /// # fn main() {
 /// let _ = GPFSEL1::Register.get();
 /// # }
@@ -56,11 +58,12 @@ macro_rules! register_fields {
 /// To pass a more specific definition of the fields the register represents they could be added in the [] of the definition
 /// like so:
 /// ```
-/// define_register! GPFSEL2: ReadWrite<u32> @ 0x3F20_0000 => [
+/// define_register!( GPFSEL2: ReadWrite<u32> @ 0x3F20_0000 => [
 ///     FSEL20 OFFSET(0) BITS(3),
 ///     FSEL21 OFFSET(3) BITS(3),
 ///     FSEL22 OFFSET(6) BITS(3)
-/// ];
+/// ] );
+/// 
 /// # fn main() {
 /// GPFSEL2::Register.modify(GPFSEL2::FSEL21, 0b001);
 /// # }

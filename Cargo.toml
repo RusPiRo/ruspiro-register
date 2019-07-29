@@ -1,13 +1,13 @@
 [package]
 name = "ruspiro-register"
 authors = ["André Borrmann <pspwizard@gmx.de>"]
-version = "0.0.1" # remember to update html_root_url
+version = "0.0.2" # remember to update html_root_url
 description = ""
 license = "LICENSE"
-repository = "https://github.com/RusPiRo/ruspiro-register/tree/v0.0.1"
+repository = "https://github.com/RusPiRo/ruspiro-register/tree/v0.0.2"
 readme = "README.md"
-keywords = ["RusPiRo", "MMIO", "register", "raspberry-pi"]
-categories = ["no_std"]
+keywords = ["RusPiRo", "MMIO", "register", "raspberry-pi", "raspberrypi", "baremetal"]
+categories = ["no_std", "baremetal"]
 edition = "2018"
 
 [lib]

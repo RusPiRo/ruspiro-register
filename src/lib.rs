@@ -4,7 +4,7 @@
  * Author: André Borrmann 
  * License: Apache License 2.0
  **********************************************************************************************************************/
-#![doc(html_root_url = "https://docs.rs/ruspiro-register/0.0.1")]
+#![doc(html_root_url = "https://docs.rs/ruspiro-register/0.0.2")]
 #![no_std]
 #![feature(const_fn)]
 
@@ -14,21 +14,14 @@
 //! 
 //! # Usage
 //! 
-//! To use the crate add the following dependency to your Cargo.toml file:
-//! ```
-//! [dependencies]
-//! ruspiro-register = { git = "https://github.com/RusPiRo/ruspiro-register", tag = "v0.0.1" }
-//! ```
-//! 
-//! In your code you can define register as follows:
+//! Register defintitions are simple and straight forward using the macros provided by this crate.
+//! In your code you can define registers like this:
 //! ```
 //! use ruspiro_register::*;
 //! 
 //! // define a single register without any specific fields, like the free running system timer counter low value
 //! // of the Raspberry Pi 3. Valid register size types are u8, u16, u32, u64.
-//! define_register! {
-//!    TIMERCLO: ReadOnly<u32> @ 0x3F00_3004 => []
-//! };
+//! define_register!( TIMERCLO: ReadOnly<u32> @ 0x3F00_3004 => [] );
 //! 
 //! // define a list of registers that may ore may not contain a specific field configuration
 //! define_registers! [
@@ -47,11 +40,11 @@
 //! ```
 //! With the name of the register given at the definition the contents and the fields are accessible like so:
 //! ```
-//! fn main() {
-//!     let _ = TIMERCLO::Register.get(); // get the raw register value
-//!     let _ = I2C_C::Register.read(I2C_C::ENABLE); // get the value of the requested register field
-//!     I2C_C::Register.modify(I2C_C::CLEAR, 0x1); // update a specific field value of the register
-//! }
+//! # fn main() {
+//! let _ = TIMERCLO::Register.get(); // get the raw register value
+//! let _ = I2C_C::Register.read(I2C_C::ENABLE); // get the value of the requested register field
+//! I2C_C::Register.modify(I2C_C::CLEAR, 0x1); // update a specific field value of the register
+//! # }
 //! ```
 //! 
 

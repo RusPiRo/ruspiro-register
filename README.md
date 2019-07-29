@@ -1,13 +1,13 @@
 # Register abstraction crate for the RusPiRo kernel
 
-This Crate provides easy to use and compile time safe access abstraction to MMIO (memory mapped input output) registers of the Raspbeyrr Pi.
+This Crate provides easy to use and compile time safe access abstraction to MMIO (memory mapped input output) registers of the Raspberry Pi.
 
 ## Usage
 
 To use this crate simply add the dependency to your ``Cargo.toml`` file:
 ```
 [dependencies]
-ruspiro-register = { git = "https://github.com/RusPiRo/ruspiro-register", tag = "v0.0.1" }
+ruspiro-register = "0.0.2"
 ```
 
 In any rust file the register could be defined with their access type, size, address and optional a detailed field definition.
@@ -34,7 +34,6 @@ fn main() {
     RW_REGISTER::Register.set(0xFFF); // write raw value to register
 }
 ```
-
 
 ## License
 Licensed under Apache License, Version 2.0, ([LICENSE](LICENSE) or http://www.apache.org/licenses/LICENSE-2.0)
