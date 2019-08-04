@@ -12,12 +12,14 @@
 
 use core::ptr::{read_volatile, write_volatile};
 use core::ops::{BitOr, BitAnd, Not, Shl, Shr};
+use core::cmp::PartialEq;
 
 /// This trait is used to describe the register size/length as type specifier. The trait is only implemented for the
 /// internal types **u8**, **u16**, **u32** and **u64** to ensure safe register access sizes with compile time checking
 pub trait RegisterType: 
     Copy + 
     Clone +
+    PartialEq +
     BitOr<Output=Self> +
     BitAnd<Output=Self> + 
     Not<Output=Self> +
@@ -78,6 +80,16 @@ macro_rules! registerget_impl {
             let val = self.get();
             (val & field.mask) >> field.shift
         }
+
+        /// Read the value of the register into a RegisterFieldValue structure
+        #[inline]
+        pub fn read_value(&self, field: RegisterField<T>) -> RegisterFieldValue<T> {
+            let val = self.get();
+            RegisterFieldValue {
+                field: field,
+                value: val & field.mask,
+            }
+        }
     )
 }
 
@@ -92,8 +104,14 @@ macro_rules! registerset_impl {
         /// Write the value of a specific register field
         #[inline]
         pub fn write(&self, field: RegisterField<T>, value: T) {
-            let val = (value & field.mask) << field.shift;
+            let val = (value << field.shift) & field.mask;
             self.set(val);
+        }
+
+        /// Write the value of a given RegisterFieldValue to the register
+        #[inline]
+        pub fn write_value(&self, fieldvalue: RegisterFieldValue<T>) {
+            self.write(fieldvalue.field, fieldvalue.value >> fieldvalue.field.shift);
         }
     )
 }
@@ -114,25 +132,46 @@ impl<T: RegisterType> ReadWrite<T> {
     registerset_impl!();
 
     /// Udate a register field with a given value
+    #[inline]
     pub fn modify(&self, field: RegisterField<T>, value: T) -> T {
 
         let old_val = self.get();
-        let new_val = (old_val & !field.mask) | (value << field.shift);
+        let new_val = (old_val & !field.mask) | ((value << field.shift) & field.mask);
         self.set(new_val);
         
         new_val
+    }
+
+    #[inline]
+    pub fn modify_value(&self, fieldvalue: RegisterFieldValue<T>) -> RegisterFieldValue<T> {
+        let new_val = self.modify(fieldvalue.field, fieldvalue.value >> fieldvalue.field.shift);
+        RegisterFieldValue {
+            field: fieldvalue.field,
+            value: new_val,
+        }
     }
 }
 
 /// Definition of a field contained inside of a register. Each field is defined by a mask and the bit shift value
 /// when constructing the field definition the stored mask is already shifted by the shift value
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct RegisterField<T: RegisterType> {
-    mask: T,
-    shift: T,
+    pub(crate) mask: T,
+    pub(crate) shift: T,
 }
 
-// Internal helper macro to implement the ```RegisterField```struct for all relevant basic types
+/// Definition of a specific fieldvalue of a regiser. This structure allows to combine field values with bit operators
+/// like ``|`` and ``&`` to build the final value that should be written to a register
+#[derive(Copy, Clone, Debug)]
+pub struct RegisterFieldValue<T: RegisterType> {
+    pub(crate) field: RegisterField<T>,
+    pub(crate) value: T,
+}
+
+// Internal helper macro to implement:
+// - ``RegisterField``struct for all relevant basic types
+// - ``FieldValue`` struct for all relevant basic types
+// - the operators for ``FieldValue``struct for all relevant basic types
 #[doc(hidden)]
 macro_rules! registerfield_impl {
     ($($t:ty),*) => ($(
@@ -141,6 +180,44 @@ macro_rules! registerfield_impl {
                 Self {
                     mask: mask << shift,
                     shift: shift,
+                }
+            }
+        }
+        
+        impl RegisterFieldValue<$t> {
+            /// create a new fieldvalue
+            pub fn new(field: RegisterField<$t>, value: $t) -> Self {
+                RegisterFieldValue {
+                    field: field,
+                    value: value << field.shift
+                }
+            }
+
+            pub fn value(&self) -> $t {
+                self.value >> self.field.shift
+            }
+        }
+
+        impl BitOr for RegisterFieldValue<$t> {
+            type Output = RegisterFieldValue<$t>;
+
+            fn bitor(self, rhs: RegisterFieldValue<$t>) -> Self {
+                let field = RegisterField::<$t>::new( self.field.mask | rhs.field.mask, 0);
+                RegisterFieldValue {
+                    field: field,
+                    value: (self.value | rhs.value),
+                }
+            }
+        }
+
+        impl BitAnd for RegisterFieldValue<$t> {
+            type Output = RegisterFieldValue<$t>;
+
+            fn bitand(self, rhs: RegisterFieldValue<$t>) -> Self {
+                let field = RegisterField::<$t>::new( self.field.mask & rhs.field.mask, 0);
+                RegisterFieldValue {
+                    field: field,
+                    value: (self.value & rhs.value),
                 }
             }
         }

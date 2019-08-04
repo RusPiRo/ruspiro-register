@@ -15,18 +15,14 @@
 /// of a register definition.
 #[doc(hidden)]
 #[macro_export]
-macro_rules! register_fields {
-    ($t:ty, [ $($field:ident OFFSET($offset:expr)),* ]) => {
-        $( 
-            #[allow(unused_variables, dead_code)]
-            pub const $field: RegisterField<$t> = RegisterField::<$t>::new(1, $offset);
-        )*
+macro_rules! register_field {
+    ($t:ty, $field:ident, $offset:expr) => {
+        #[allow(unused_variables, dead_code)]
+        pub const $field: RegisterField<$t> = RegisterField::<$t>::new(1, $offset);
     };
-    ($t:ty, [ $($field:ident OFFSET($offset:expr) BITS($bits:expr)),* ]) => {
-        $( 
-            #[allow(unused_variables, dead_code)]
-            pub const $field: RegisterField<$t> = RegisterField::<$t>::new((1<<$bits)-1, $offset);
-        )*
+    ($t:ty, $field:ident, $offset:expr, $bits:expr) => {
+        #[allow(unused_variables, dead_code)]
+        pub const $field: RegisterField<$t> = RegisterField::<$t>::new((1<<$bits)-1, $offset);
     };
 }
 
@@ -48,7 +44,7 @@ macro_rules! register_fields {
 /// ```
 /// const GPIO_BASE:u32 = 0x3F00_0000;
 /// 
-/// define_register!( GPFSEL1: ReadWrite<u32> @ GPIO_BASE + 0x04 => [] );
+/// define_register!( GPFSEL1: ReadWrite<u32> @ GPIO_BASE + 0x04 );
 /// 
 /// # fn main() {
 /// let _ = GPFSEL1::Register.get();
@@ -70,39 +66,60 @@ macro_rules! register_fields {
 /// ```
 #[macro_export]
 macro_rules! define_register {
+    // REGISTER_NAME: ReadWrite<TYPE> @ ADDRESS
+    ($name:ident : ReadWrite<$t:ty> @ $addr:expr) => {
+        $crate::define_register!($name : ReadWrite<$t> @ $addr => []);
+    };
+
     // REGISTER_NAME: ReadWrite<TYPE> @ ADDRESS => []
-    ($name:ident : ReadWrite<$t:ty> @ $addr:expr => $fields:tt) => {
+    ($name:ident : ReadWrite<$t:ty> @ $addr:expr => [ $($field:ident OFFSET($offset:expr) $(BITS($bits:expr))?),* ]) => {
         #[allow(non_snake_case)]
         #[allow(non_upper_case_globals)]
         mod $name {
             use $crate::register::*;
             use super::*;
             pub const Register: ReadWrite<$t> = ReadWrite::<$t>::new($addr);
-            $crate::register_fields!($t, $fields);
+            $( 
+                $crate::register_field!($t, $field, $offset $(, $bits)?);
+            )*
         }
     };
 
+    // REGISTER_NAME: ReadOnly<TYPE> @ ADDRESS
+    ($name:ident : ReadOnly<$t:ty> @ $addr:expr) => {
+        $crate::define_register!($name : ReadOnly<$t> @ $addr => []);
+    };
+
     // REGISTER_NAME: ReadOnly<type> @ ADDRESS => []
-    ($name:ident : ReadOnly<$t:ty> @ $addr:expr => $fields:tt) => {
+    ($name:ident : ReadOnly<$t:ty> @ $addr:expr => [ $($field:ident OFFSET($offset:expr) $(BITS($bits:expr))?),* ]) => {
         #[allow(non_snake_case)]
         #[allow(non_upper_case_globals)]
         mod $name {
             use $crate::register::*;
             use super::*;
             pub const Register: ReadOnly<$t> = ReadOnly::<$t>::new($addr);
-            $crate::register_fields!($t, $fields);
+            $( 
+                $crate::register_field!($t, $field, $offset $(, $bits)?);
+            )*
         }
     };
 
+    // REGISTER_NAME: WriteOnly<TYPE> @ ADDRESS
+    ($name:ident : WriteOnly<$t:ty> @ $addr:expr) => {
+        $crate::define_register!($name : WriteOnly<$t> @ $addr => []);
+    };
+    
     // REGISTER_NAME: WriteOnly<type> @ ADDRESS => []
-    ($name:ident : WriteOnly<$t:ty> @ $addr:expr => $fields:tt) => {
+    ($name:ident : WriteOnly<$t:ty> @ $addr:expr => [ $($field:ident OFFSET($offset:expr) $(BITS($bits:expr))?),* ]) => {
         #[allow(non_snake_case)]
         #[allow(non_upper_case_globals)]
         mod $name {
             use $crate::register::*;
             use super::*;
             pub const Register: WriteOnly<$t> = WriteOnly::<$t>::new($addr);
-            $crate::register_fields!($t, $fields);
+            $( 
+                $crate::register_field!($t, $field, $offset $(, $bits)?);
+            )*
         }
     };
 }
@@ -116,8 +133,11 @@ macro_rules! define_register {
 /// # use rubo_register::*;
 /// 
 /// define_registers! [
-///     TIMERCLO: ReadOnly<u32> @ 0x3F000_3004 => [],
-///     TIMERCHI: ReadOnly<u32> @ 0x3F000_3008 => []
+///     TIMERCLO: ReadOnly<u32> @ 0x3F000_3004,
+///     TIMERCHI: ReadOnly<u32> @ 0x3F000_3008,
+///     GPPUD: ReadWrite<u32> @ 0x3F200_0094 => [
+///         PUD OFFSET(0) BITS(2)
+///     ]
 /// ];
 /// 
 /// # fn main() {
@@ -128,9 +148,9 @@ macro_rules! define_register {
 /// 
 #[macro_export]
 macro_rules! define_registers {
-    ( $($name:ident : $access:ident<$t:ty> @ $addr:expr => $fields:tt),* ) => {
+    ( $($name:ident : $access:ident<$t:ty> @ $addr:expr $(=> $fields:tt)?),* ) => {
         $(
-            $crate::define_register!($name : $access<$t> @ $addr => $fields);
+            $crate::define_register!($name : $access<$t> @ $addr $(=> $fields)?);
         )*
     }
 }
