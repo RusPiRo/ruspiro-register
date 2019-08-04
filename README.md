@@ -2,12 +2,17 @@
 
 This Crate provides easy to use and compile time safe access abstraction to MMIO (memory mapped input output) registers of the Raspberry Pi.
 
+[![Travis-CI Status](https://api.travis-ci.org/RusPiRo/ruspiro-register.svg?branch=master)](https://travis-ci.org/RusPiRo/ruspiro-register)
+[![Latest Version](https://img.shields.io/crates/v/ruspiro-register.svg)](https://crates.io/crates/ruspiro-register)
+[![Documentation](https://docs.rs/ruspiro-register/badge.svg)](https://docs.rs/ruspiro-register)
+[![License](https://img.shields.io/crates/l/ruspiro-register.svg)](https://github.com/RusPiRo/ruspiro-register#license)
+
 ## Usage
 
 To use this crate simply add the dependency to your ``Cargo.toml`` file:
 ```
 [dependencies]
-ruspiro-register = "0.0.2"
+ruspiro-register = "0.1.0"
 ```
 
 In any rust file the register could be defined with their access type, size, address and optional a detailed field definition.
