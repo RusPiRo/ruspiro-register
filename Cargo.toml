@@ -5,6 +5,7 @@ version = "0.1.0" # remember to update html_root_url
 description = "The crate provides simple to use macros to define MMIO registers representations allowing safe access to their contents."
 license = "Apache-2.0"
 repository = "https://github.com/RusPiRo/ruspiro-register/tree/v0.1.0"
+documentation = "https://docs.rs/ruspiro-register/0.1.0"
 readme = "README.md"
 keywords = ["RusPiRo", "register", "raspberrypi", "baremetal", "mmio"]
 categories = ["no-std", "embedded"]
