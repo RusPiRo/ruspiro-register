@@ -22,7 +22,7 @@ The register access types are ``ReadOnly``, ``WriteOnly`` and ``ReadWrite``. The
 use ruspiro_register::*;
 
 define_registers! [
-    RO_REGISTER: ReadOnly<u32>, 0xFF00_0000 => [],
+    RO_REGISTER: ReadOnly<u32>, 0xFF00_0000,
     WO_REGISTER: WriteOnly<u8>, 0xFF00_0004 => [
         FLAG1   OFFSET(0) BITS(2),
         FLAG2   OFFSET(2),

@@ -34,7 +34,7 @@ macro_rules! register_field {
 /// 
 /// ```
 /// # use rubo_register::*;
-/// define_register!( GPFSEL0: ReadWrite<u32> @ 0x3F20_0000 => [] );
+/// define_register!( GPFSEL0: ReadWrite<u32> @ 0x3F20_0000 );
 /// 
 /// # fn main() {
 /// let _ = GPFSEL0::Register.get();
