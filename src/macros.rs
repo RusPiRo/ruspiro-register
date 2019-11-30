@@ -154,3 +154,64 @@ macro_rules! define_registers {
         )*
     }
 }
+
+#[macro_export]
+macro_rules! define_system_register {
+    (@$name:ident<$t:ty> { $($field:ident OFFSET($offset:expr) $(BITS($bits:expr))? $([ $($enum:ident : $value:expr),* ])?),* }) => {
+        $(
+            #[allow(non_snake_case)]
+            #[allow(non_upper_case_globals)]
+            pub mod $field {
+                use super::*;
+                
+                register_field!($t, Field, $offset $(, $bits)?);
+                
+                pub fn with_value(value: $t) -> RegisterFieldValue<$t> {
+                    RegisterFieldValue::<$t>::new(Field, value)
+                }
+
+                $(
+                    $(pub const $enum: RegisterFieldValue::<$t> = RegisterFieldValue::<$t>::new(Field, $value);)*
+                )*
+            }
+        )*
+
+        #[inline]
+        pub fn get() -> $t {
+            let value: $t;
+            unsafe { 
+                asm!(concat!("mrs $0,", stringify!($name)):"=r"(value):::"volatile")
+            };
+            return value;
+        }
+
+        #[inline]
+        pub fn set(value: $t) {
+            unsafe {
+                asm!(concat!("msr ", stringify!($name) , ", $0 ")::"r"(value)::"volatile")
+            }
+        }
+        
+        #[inline]
+        pub fn write(value: RegisterFieldValue::<$t>) {
+            let raw_value = read() & !value.mask() | value.value();
+            set(raw_value);
+        }
+
+        #[inline]
+        pub fn read() -> $t {
+            get()
+        }
+    };
+    
+    ($name:ident<$t:ty> { $($field:ident OFFSET($offset:expr) $(BITS($bits:expr))? $([ $($enum:ident : $value:expr),* ])?),* }) => {
+        #[allow(non_snake_case)]
+        #[allow(non_upper_case_globals)]
+        pub mod $name {
+            use super::*;
+            define_system_register!{
+                @$name<$t> { $($field OFFSET($offset) $(BITS($bits))? $([ $($enum : $value),* ])?),* }
+            }
+        }
+    };
+}

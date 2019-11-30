@@ -39,19 +39,19 @@ macro_rules! registertype_impl {
 registertype_impl![u8, u16, u32, u64];
 
 /// This struct allows read only access to a register.
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct ReadOnly<T: RegisterType> {
     ptr: *mut T, // base address for the register
 }
 
 /// This struct allows write only access to a register.
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct WriteOnly<T: RegisterType> {
     ptr: *mut T, // base address for the register
 }
 
 /// This struct allows read/write access to a register.
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct ReadWrite<T: RegisterType> {
     ptr: *mut T, // base address for the register
 }
@@ -186,7 +186,7 @@ macro_rules! registerfield_impl {
         
         impl RegisterFieldValue<$t> {
             /// create a new fieldvalue
-            pub fn new(field: RegisterField<$t>, value: $t) -> Self {
+            pub const fn new(field: RegisterField<$t>, value: $t) -> Self {
                 RegisterFieldValue {
                     field: field,
                     value: value << field.shift
@@ -195,6 +195,10 @@ macro_rules! registerfield_impl {
 
             pub fn value(&self) -> $t {
                 self.value >> self.field.shift
+            }
+
+            pub fn mask(&self) -> $t {
+                self.field.mask
             }
         }
 

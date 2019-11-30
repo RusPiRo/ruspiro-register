@@ -4,9 +4,9 @@
  * Author: André Borrmann 
  * License: Apache License 2.0
  **********************************************************************************************************************/
-#![doc(html_root_url = "https://docs.rs/ruspiro-register/0.1.1")]
+#![doc(html_root_url = "https://docs.rs/ruspiro-register/0.3.0")]
 #![no_std]
-#![feature(const_fn)]
+#![feature(asm, const_fn)]
 
 //! # RusPiRo MMIO register abstraction
 //! 
@@ -53,3 +53,6 @@ pub use self::macros::*;
 
 pub mod register;
 pub use self::register::*;
+
+pub mod system;
+//pub use self::system::*;
