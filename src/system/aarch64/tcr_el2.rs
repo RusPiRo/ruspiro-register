@@ -8,10 +8,10 @@
 //! # TCR_EL2 Register
 //! 
 
-use crate::{ define_system_register, register_field };
+use crate::{ define_aarch64_register, register_field };
 use crate::register::*;
 
-define_system_register!{
+define_aarch64_register!{
     @tcr_el2<u32> {
         // Size offset of the memory reagion addressed by ttbr0_el2 (size = 2^(64-t0sz))
         T0SZ    OFFSET(0) BITS(6),

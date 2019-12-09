@@ -8,11 +8,11 @@
 //! # MAIR_EL2 Register
 //! 
 
-use crate::{ define_system_register, register_field };
+use crate::{ define_aarch64_register, register_field };
 use crate::register::*;
 
-define_system_register! {
-    @mair_el2<u64> {
+define_aarch64_register! {
+    @mair_el1<u64> {
         MAIR0 OFFSET(0) BITS(8) [
             NGNRNE: 0x00,
             NGNRE: 0x04,

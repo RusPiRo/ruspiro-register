@@ -2,7 +2,7 @@
  * Copyright (c) 2019 by the authors
  * 
  * Author: André Borrmann 
- * License: Appache License 2.0
+ * License: Apache License 2.0
  **********************************************************************************************************************/
 
 //! # Register abstraction implementation
@@ -176,6 +176,7 @@ pub struct RegisterFieldValue<T: RegisterType> {
 macro_rules! registerfield_impl {
     ($($t:ty),*) => ($(
         impl RegisterField<$t> {
+            #[inline]
             pub const fn new(mask: $t, shift: $t) -> RegisterField<$t> {
                 Self {
                     mask: mask << shift,
@@ -186,6 +187,7 @@ macro_rules! registerfield_impl {
         
         impl RegisterFieldValue<$t> {
             /// create a new fieldvalue
+            #[inline]
             pub const fn new(field: RegisterField<$t>, value: $t) -> Self {
                 RegisterFieldValue {
                     field: field,
@@ -205,6 +207,7 @@ macro_rules! registerfield_impl {
         impl BitOr for RegisterFieldValue<$t> {
             type Output = RegisterFieldValue<$t>;
 
+            #[inline]
             fn bitor(self, rhs: RegisterFieldValue<$t>) -> Self {
                 let field = RegisterField::<$t>::new( self.field.mask | rhs.field.mask, 0);
                 RegisterFieldValue {
@@ -216,7 +219,7 @@ macro_rules! registerfield_impl {
 
         impl BitAnd for RegisterFieldValue<$t> {
             type Output = RegisterFieldValue<$t>;
-
+            #[inline]
             fn bitand(self, rhs: RegisterFieldValue<$t>) -> Self {
                 let field = RegisterField::<$t>::new( self.field.mask & rhs.field.mask, 0);
                 RegisterFieldValue {

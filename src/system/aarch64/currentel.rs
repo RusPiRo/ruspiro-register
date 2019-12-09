@@ -1,0 +1,18 @@
+/*********************************************************************************************************************** 
+ * Copyright (c) 2019 by the authors
+ * 
+ * Author: André Borrmann 
+ * License: Apache 2.0
+ **********************************************************************************************************************/
+
+//! # TTBR0_EL2 Register
+//! 
+
+use crate::{ define_aarch64_register, register_field };
+use crate::register::*;
+
+define_aarch64_register! {
+    @currentEl<u64> {
+        el OFFSET(2) BITS(2)
+    }
+}

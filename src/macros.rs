@@ -156,7 +156,7 @@ macro_rules! define_registers {
 }
 
 #[macro_export]
-macro_rules! define_system_register {
+macro_rules! define_aarch64_register {
     (@$name:ident<$t:ty> { $($field:ident OFFSET($offset:expr) $(BITS($bits:expr))? $([ $($enum:ident : $value:expr),* ])?),* }) => {
         $(
             #[allow(non_snake_case)]
@@ -194,13 +194,17 @@ macro_rules! define_system_register {
         
         #[inline]
         pub fn write(value: RegisterFieldValue::<$t>) {
-            let raw_value = read() & !value.mask() | value.value();
+            let raw_value = (get() & !value.field.mask) | value.value;
             set(raw_value);
         }
 
         #[inline]
-        pub fn read() -> $t {
-            get()
+        pub fn read(field: RegisterField<$t>) -> RegisterFieldValue<$t> {
+            let val = get();
+            RegisterFieldValue {
+                field: field,
+                value: val & field.mask,
+            }
         }
     };
     
@@ -211,6 +215,82 @@ macro_rules! define_system_register {
             use super::*;
             define_system_register!{
                 @$name<$t> { $($field OFFSET($offset) $(BITS($bits))? $([ $($enum : $value),* ])?),* }
+            }
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! define_aarch32_register {
+    (@$name:ident $crn:ident, $op1:tt, $crm:ident, $op2:tt { $($field:ident OFFSET($offset:expr) $(BITS($bits:expr))? $([ $($enum:ident : $value:expr),* ])?),* }) => {
+        $(
+            #[allow(non_snake_case)]
+            #[allow(non_upper_case_globals)]
+            pub mod $field {
+                use super::*;
+                
+                register_field!(u32, Field, $offset $(, $bits)?);
+                
+                #[inline]
+                pub fn with_value(value: u32) -> RegisterFieldValue<u32> {
+                    RegisterFieldValue::<u32>::new(Field, value)
+                }
+
+                $(
+                    $(pub const $enum: RegisterFieldValue::<u32> = RegisterFieldValue::<u32>::new(Field, $value);)*
+                )*
+            }
+        )*
+
+        #[inline]
+        pub fn get() -> u32 {
+            let value: u32;
+            unsafe { 
+                asm!(concat!("mrc p15, ",
+                             stringify!($op1), 
+                             ", $0 , ",
+                             stringify!($crn), ", ",
+                             stringify!($crm), ", ",
+                             stringify!($op2)):"=r"(value):::"volatile")
+            };
+            return value;
+        }
+
+        #[inline]
+        pub fn set(value: u32) {
+            unsafe {
+                asm!(concat!("mcr p15, ",
+                             stringify!($op1),
+                             ", $0 , ",
+                            stringify!($crn), ", ",
+                            stringify!($crm), ", ",
+                            stringify!($op2))::"r"(value)::"volatile")
+            }
+        }
+        
+        #[inline]
+        pub fn write(value: RegisterFieldValue::<u32>) {
+            let raw_value = (get() & !value.field.mask) | value.value;
+            set(raw_value);
+        }
+
+        #[inline]
+        pub fn read(field: RegisterField<u32>) -> RegisterFieldValue<u32> {
+            let val = get();
+            RegisterFieldValue {
+                field: field,
+                value: val & field.mask,
+            }
+        }
+    };
+    
+    ($name:ident $crn:ident, $op1:tt, $crm:ident, $op2:tt { $($field:ident OFFSET($offset:expr) $(BITS($bits:expr))? $([ $($enum:ident : $value:expr),* ])?),* }) => {
+        #[allow(non_snake_case)]
+        #[allow(non_upper_case_globals)]
+        pub mod $name {
+            use super::*;
+            define_system_register!{
+                @$name $crn, $op1, $crm, $op2 { $($field OFFSET($offset) $(BITS($bits))? $([ $($enum : $value),* ])?),* }
             }
         }
     };

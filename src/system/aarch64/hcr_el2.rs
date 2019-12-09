@@ -8,10 +8,10 @@
 //! # HCR_EL2 Register
 //! 
 
-use crate::{ define_system_register, register_field };
+use crate::{ define_aarch64_register, register_field };
 use crate::register::*;
 
-define_system_register! {
+define_aarch64_register! {
     @hcr_el2<u64> {
         // enable second stage of translation
         VM      OFFSET(0) [

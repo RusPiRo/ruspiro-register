@@ -8,11 +8,15 @@
 //! # System register definitions
 //! 
 
-pub mod hcr_el2;
-pub mod mair_el2;
-pub mod sctlr_el2;
-pub mod ttbr0_el2;
-pub mod tcr_el2;
+#[cfg(target_arch="aarch64")]
+pub mod aarch64;
+#[cfg(target_arch="aarch64")]
+pub use aarch64::*;
+
+#[cfg(target_arch="arm")]
+pub mod aarch32;
+#[cfg(target_arch="arm")]
+pub use aarch32::*;
 
 /// assembly NOP instruction
 #[inline(always)]
@@ -24,4 +28,10 @@ pub fn nop() {
 #[inline(always)]
 pub fn wfe() {
     unsafe { asm!("wfe") };
+}
+
+/// assembly ISB instruction
+#[inline(always)]
+pub fn isb() {
+    unsafe { asm!("isb sy") };
 }

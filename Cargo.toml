@@ -4,6 +4,7 @@ authors = ["André Borrmann <pspwizard@gmx.de>"]
 version = "0.3.0" # remember to update html_root_url
 description = """
 The crate provides simple to use macros to define MMIO registers representations allowing safe access to their contents.
+In addition this crate defines specific aarch64 and aarch32 (CP15) registers to safely use them in rust code.
 """
 license = "Apache-2.0"
 repository = "https://github.com/RusPiRo/ruspiro-register"
