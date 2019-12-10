@@ -31,11 +31,5 @@ doc:
 	# build docu for this crate using custom target
 	cargo doc --no-deps --target aarch64-unknown-linux-gnu --release --open
 	
-publish-dry-run:
-	xargo publish --dry-run --target aarch64-unknown-linux-gnu
-
-publish:
-	xargo publish --target aarch64-unknown-linux-gnu
-
 clean:
 	cargo clean

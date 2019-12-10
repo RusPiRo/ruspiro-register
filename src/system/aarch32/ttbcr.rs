@@ -26,6 +26,7 @@ define_aarch32_register!{
             ENABLED: 0,
             DISABLED: 0
         ],
+        // extended address enable flag, if enabled it uses 64Bit long descriptor format
         EAE OFFSET(31)
     }
 }
