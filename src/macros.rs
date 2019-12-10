@@ -33,7 +33,7 @@ macro_rules! register_field {
 /// # Examples
 /// 
 /// ```
-/// # use rubo_register::*;
+/// # use ruspiro_register::*;
 /// define_register!( GPFSEL0: ReadWrite<u32> @ 0x3F20_0000 );
 /// 
 /// # fn main() {
@@ -42,6 +42,7 @@ macro_rules! register_field {
 /// ```
 /// 
 /// ```
+/// # use ruspiro_register::*;
 /// const GPIO_BASE:u32 = 0x3F00_0000;
 /// 
 /// define_register!( GPFSEL1: ReadWrite<u32> @ GPIO_BASE + 0x04 );
@@ -54,6 +55,8 @@ macro_rules! register_field {
 /// To pass a more specific definition of the fields the register represents they could be added in the [] of the definition
 /// like so:
 /// ```
+/// # use ruspiro_register::*;
+/// 
 /// define_register!( GPFSEL2: ReadWrite<u32> @ 0x3F20_0000 => [
 ///     FSEL20 OFFSET(0) BITS(3),
 ///     FSEL21 OFFSET(3) BITS(3),
@@ -133,9 +136,9 @@ macro_rules! define_register {
 /// # use ruspiro_register::*;
 /// 
 /// define_registers! [
-///     TIMERCLO: ReadOnly<u32> @ 0x3F000_3004,
-///     TIMERCHI: ReadOnly<u32> @ 0x3F000_3008,
-///     GPPUD: ReadWrite<u32> @ 0x3F200_0094 => [
+///     TIMERCLO: ReadOnly<u32> @ 0x3F00_3004,
+///     TIMERCHI: ReadOnly<u32> @ 0x3F00_3008,
+///     GPPUD: ReadWrite<u32> @ 0x3F20_0094 => [
 ///         PUD OFFSET(0) BITS(2)
 ///     ]
 /// ];
@@ -161,6 +164,7 @@ macro_rules! define_registers {
 /// ```
 /// # use ruspiro_register::*;
 /// 
+/// # #[cfg(target_arch="aarch64")]
 /// define_aarch64_register! {
 ///     foo<u32> {
 ///         BAR OFFSET(0) [
@@ -176,6 +180,7 @@ macro_rules! define_registers {
 /// }
 /// 
 /// # fn main() {
+/// # #[cfg(target_arch="aarch64")]
 ///     foo::write(
 ///         foo::BAR::VAL1 | foo::BAZ::VAL2
 ///     );
@@ -220,17 +225,14 @@ macro_rules! define_aarch64_register {
         
         #[inline]
         pub fn write(value: RegisterFieldValue::<$t>) {
-            let raw_value = (get() & !value.field.mask) | value.value;
+            let raw_value = (get() & !value.mask()) | value.value();
             set(raw_value);
         }
 
         #[inline]
         pub fn read(field: RegisterField<$t>) -> RegisterFieldValue<$t> {
             let val = get();
-            RegisterFieldValue {
-                field: field,
-                value: val & field.mask,
-            }
+            RegisterFieldValue::<$t>::new(field, val & field.mask())
         }
     };
     
@@ -251,7 +253,7 @@ macro_rules! define_aarch64_register {
 /// # Examples
 /// ```
 /// # use ruspiro_register::*;
-/// 
+/// # #[cfg(target_arch="arm")]
 /// define_aarch32_register! {
 ///     foo {
 ///         BAR OFFSET(0) [
@@ -267,6 +269,7 @@ macro_rules! define_aarch64_register {
 /// }
 /// 
 /// # fn main() {
+/// # #[cfg(target_arch="arm")]
 ///     foo::write(
 ///         foo::BAR::VAL1 | foo::BAZ::VAL2
 ///     );
@@ -322,17 +325,13 @@ macro_rules! define_aarch32_register {
         
         #[inline]
         pub fn write(value: RegisterFieldValue::<u32>) {
-            let raw_value = (get() & !value.field.mask) | value.value;
+            let raw_value = (get() & !value.mask()) | value.value();
             set(raw_value);
         }
 
         #[inline]
         pub fn read(field: RegisterField<u32>) -> RegisterFieldValue<u32> {
-            let val = get();
-            RegisterFieldValue {
-                field: field,
-                value: val & field.mask,
-            }
+            RegisterFieldValue::<u32>::new(field, get() >> field.shift())
         }
     };
     

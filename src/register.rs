@@ -156,16 +156,18 @@ impl<T: RegisterType> ReadWrite<T> {
 /// when constructing the field definition the stored mask is already shifted by the shift value
 #[derive(Copy, Clone, Debug)]
 pub struct RegisterField<T: RegisterType> {
-    pub(crate) mask: T,
-    pub(crate) shift: T,
+    mask: T,
+    shift: T,
 }
 
 /// Definition of a specific fieldvalue of a regiser. This structure allows to combine field values with bit operators
 /// like ``|`` and ``&`` to build the final value that should be written to a register
 #[derive(Copy, Clone, Debug)]
 pub struct RegisterFieldValue<T: RegisterType> {
-    pub(crate) field: RegisterField<T>,
-    pub(crate) value: T,
+    /// register field definition
+    field: RegisterField<T>,
+    /// register field value
+    value: T,
 }
 
 // Internal helper macro to implement:
@@ -176,31 +178,59 @@ pub struct RegisterFieldValue<T: RegisterType> {
 macro_rules! registerfield_impl {
     ($($t:ty),*) => ($(
         impl RegisterField<$t> {
-            #[inline]
+            /// Create a new register field definition with the mask and the shift offset for this
+            /// mask. The offset is the bit offset this field begins.
+            #[inline]            
             pub const fn new(mask: $t, shift: $t) -> RegisterField<$t> {
                 Self {
-                    mask: mask << shift,
+                    mask: mask,// << shift,
                     shift: shift,
                 }
+            }
+
+            /// retrieve the current mask of the field shifted to its correct position
+            #[inline]
+            pub(crate) fn mask(&self) -> $t {
+                self.mask.checked_shl(self.shift as u32).unwrap_or(0)
+            }
+
+            /// retrieve the current shift of the field
+            #[allow(dead_code)]
+            #[inline]
+            pub(crate) fn shift(&self) -> $t {
+                self.shift
             }
         }
         
         impl RegisterFieldValue<$t> {
-            /// create a new fieldvalue
+            /// Create a new fieldvalue based on the field definition and the value given
             #[inline]
             pub const fn new(field: RegisterField<$t>, value: $t) -> Self {
                 RegisterFieldValue {
                     field: field,
-                    value: value << field.shift
+                    value: value & field.mask //<< field.shift
                 }
             }
 
+            /// Retrieve the register field value
+            #[inline]
             pub fn value(&self) -> $t {
-                self.value >> self.field.shift
+                self.value //>> self.field.shift()
             }
 
+            /// Retrieve the register field raw value, means the value is returned in it's position
+            /// as it appears in the register when read with the field mask applied but not
+            /// shifted
+            #[inline]
+            pub fn raw_value(&self) -> $t {
+                self.value.checked_shl(self.field.shift as u32).unwrap_or(0)
+            }
+
+            /// Retrieve the field mask used with this register field. The mask is shifted to it's
+            /// corresponding field position
+            #[inline]
             pub fn mask(&self) -> $t {
-                self.field.mask
+                self.field.mask()
             }
         }
 
@@ -209,10 +239,10 @@ macro_rules! registerfield_impl {
 
             #[inline]
             fn bitor(self, rhs: RegisterFieldValue<$t>) -> Self {
-                let field = RegisterField::<$t>::new( self.field.mask | rhs.field.mask, 0);
+                let field = RegisterField::<$t>::new( self.field.mask() | rhs.field.mask(), 0);
                 RegisterFieldValue {
                     field: field,
-                    value: (self.value | rhs.value),
+                    value: (self.raw_value() | rhs.raw_value()),
                 }
             }
         }
@@ -221,10 +251,10 @@ macro_rules! registerfield_impl {
             type Output = RegisterFieldValue<$t>;
             #[inline]
             fn bitand(self, rhs: RegisterFieldValue<$t>) -> Self {
-                let field = RegisterField::<$t>::new( self.field.mask & rhs.field.mask, 0);
+                let field = RegisterField::<$t>::new( self.field.mask() & rhs.field.mask(), 0);
                 RegisterFieldValue {
                     field: field,
-                    value: (self.value & rhs.value),
+                    value: (self.raw_value() & rhs.raw_value()),
                 }
             }
         }
