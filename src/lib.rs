@@ -8,7 +8,28 @@
 #![no_std]
 #![feature(asm, const_fn)]
 
-//! # RusPiRo MMIO register abstraction
+//! # System register access
+//! 
+//! Definitions and simple access to the system registers used in the different RusPiRo crates. Depending
+//! on the target architecture the crate will be build for it contains the definitions of the Aarch64 or the
+//! Aarch32 CP15 system register.
+//! 
+//! # Usage
+//! 
+//! ```
+//! use ruspiro_register::system::*;
+//! 
+//! # fn main() {
+//!     // update the system control register in aarch64 to enable caching and the MMU in EL1
+//!     sctlr_el1::write(
+//!         sctlr_el1::M::ENABLE | // MMU
+//!         sctlr_el1::C::ENABLE | // data cache
+//!         sctlr_el1::I::ENABLE   // instruction cache
+//!     );
+//! # }
+//! ```
+//! 
+//! # MMIO register abstraction
 //! 
 //! The crate provides a hopefully simple to use compiletime type safe abstraction of MMIO registers of the Raspberry Pi.
 //! 

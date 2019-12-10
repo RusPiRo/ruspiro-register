@@ -35,3 +35,9 @@ pub fn wfe() {
 pub fn isb() {
     unsafe { asm!("isb sy") };
 }
+
+/// assembly DSB instruction
+#[inline(always)]
+pub fn dsb() {
+    unsafe { asm!("dsb") };
+}

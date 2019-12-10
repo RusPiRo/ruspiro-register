@@ -5,7 +5,7 @@
  * License: Apache 2.0
  **********************************************************************************************************************/
 
-//! # MAIR_EL2 Register
+//! # MAIR_EL1 Register
 //! 
 
 use crate::{ define_aarch64_register, register_field };

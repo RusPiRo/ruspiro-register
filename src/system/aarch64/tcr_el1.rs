@@ -5,7 +5,7 @@
  * License: Apache 2.0
  **********************************************************************************************************************/
 
-//! # TCR_EL2 Register
+//! # TCR_EL1 Register
 //! 
 
 use crate::{ define_aarch64_register, register_field };

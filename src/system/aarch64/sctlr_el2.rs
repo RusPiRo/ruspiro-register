@@ -5,7 +5,7 @@
  * License: Apache 2.0
  **********************************************************************************************************************/
 
-//! # SCTRL_EL2 Register
+//! # SCTLR_EL2 Register
 //! 
 
 use crate::{ define_aarch64_register, register_field };

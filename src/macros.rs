@@ -130,7 +130,7 @@ macro_rules! define_register {
 /// # Examples
 /// 
 /// ```
-/// # use rubo_register::*;
+/// # use ruspiro_register::*;
 /// 
 /// define_registers! [
 ///     TIMERCLO: ReadOnly<u32> @ 0x3F000_3004,
@@ -155,6 +155,32 @@ macro_rules! define_registers {
     }
 }
 
+/// Macro to define an Aarch64 system register and its fields
+/// 
+/// # Examples
+/// ```
+/// # use ruspiro_register::*;
+/// 
+/// define_aarch64_register! {
+///     foo<u32> {
+///         BAR OFFSET(0) [
+///             VAL1: 0b1,
+///             VAL0: 0b0
+///         ],
+///         BAZ OFFSET(1) BITS(2) [
+///             VAL1: 0b01,
+///             VAL2: 0b10,
+///             VAL3: 0b11
+///         ]
+///     }
+/// }
+/// 
+/// # fn main() {
+///     foo::write(
+///         foo::BAR::VAL1 | foo::BAZ::VAL2
+///     );
+/// # }
+/// 
 #[macro_export]
 macro_rules! define_aarch64_register {
     (@$name:ident<$t:ty> { $($field:ident OFFSET($offset:expr) $(BITS($bits:expr))? $([ $($enum:ident : $value:expr),* ])?),* }) => {
@@ -220,6 +246,32 @@ macro_rules! define_aarch64_register {
     };
 }
 
+/// Macro to define an Aarch32 (CP15) system register and its fields
+/// 
+/// # Examples
+/// ```
+/// # use ruspiro_register::*;
+/// 
+/// define_aarch32_register! {
+///     foo {
+///         BAR OFFSET(0) [
+///             VAL1: 0b1,
+///             VAL0: 0b0
+///         ],
+///         BAZ OFFSET(1) BITS(2) [
+///             VAL1: 0b01,
+///             VAL2: 0b10,
+///             VAL3: 0b11
+///         ]
+///     }
+/// }
+/// 
+/// # fn main() {
+///     foo::write(
+///         foo::BAR::VAL1 | foo::BAZ::VAL2
+///     );
+/// # }
+///
 #[macro_export]
 macro_rules! define_aarch32_register {
     (@$name:ident $crn:ident, $op1:tt, $crm:ident, $op2:tt { $($field:ident OFFSET($offset:expr) $(BITS($bits:expr))? $([ $($enum:ident : $value:expr),* ])?),* }) => {

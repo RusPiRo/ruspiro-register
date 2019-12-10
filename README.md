@@ -1,6 +1,7 @@
 # Register abstraction crate for the RusPiRo kernel
 
-This Crate provides easy to use and compile time safe access abstraction to MMIO (memory mapped input output) registers of the Raspberry Pi.
+This crate provides easy to use and compile time safe access abstraction to MMIO (memory mapped input output) registers of the Raspberry Pi.
+This crate also provides definitions for some aarch64 and aarch32 cp15 system register. Whether the aarch64 or aarch32 register are available depends on the target architecture used while building this crate.
 
 [![Travis-CI Status](https://api.travis-ci.org/RusPiRo/ruspiro-register.svg?branch=master)](https://travis-ci.org/RusPiRo/ruspiro-register)
 [![Latest Version](https://img.shields.io/crates/v/ruspiro-register.svg)](https://crates.io/crates/ruspiro-register)
@@ -12,7 +13,7 @@ This Crate provides easy to use and compile time safe access abstraction to MMIO
 To use this crate simply add the dependency to your ``Cargo.toml`` file:
 ```
 [dependencies]
-ruspiro-register = "0.1.1"
+ruspiro-register = "0.3"
 ```
 
 In any rust file the register could be defined with their access type, size, address and optional a detailed field definition.
@@ -37,6 +38,25 @@ fn main() {
     WO_REGISTER::Register.write(WO_REGISTER::FLAG3, 0b1010); // write only field FLAG3 into the register
     
     RW_REGISTER::Register.set(0xFFF); // write raw value to register
+}
+```
+
+If access to the system registers is needed this could be done like so:
+```
+use ruspiro_register::system::*;
+
+fn main64() {
+    // update the system control register of EL2 in aarch64 mode to deactivate the MMU
+    sctlr_el2::write(
+        sctlr::M::DISABLE
+    );
+}
+
+fn main32() {
+    // update the system control register in aarch32 mode to deactivate the MMU
+    sctlr::write(
+        sctlr::M::DISABLE
+    );
 }
 ```
 
