@@ -4,7 +4,7 @@
  * Author: André Borrmann
  * License: Apache License 2.0
  **********************************************************************************************************************/
-#![doc(html_root_url = "https://docs.rs/ruspiro-register/0.3.0")]
+#![doc(html_root_url = "https://docs.rs/ruspiro-register/0.3.1")]
 #![no_std]
 #![feature(asm, const_fn)]
 
@@ -33,7 +33,7 @@
 //!
 //! ## MMIO register abstraction
 //!
-//! Simple to use and compiletime type safe abstraction of memory mapped (MMIO) registers of the 
+//! Simple to use and compiletime type safe abstraction of memory mapped (MMIO) registers of the
 //! Raspberry Pi.
 //!
 //! ## Usage
@@ -48,9 +48,9 @@
 //! define_register!( TIMERCLO: ReadOnly<u32> @ 0x3F00_3004 );
 //!
 //! // define a list of registers that may ore may not contain a specific field configuration
-//! define_registers! [
-//!     TIMERCHI: ReadOnly<u32> @ 0x3F00_3008,
-//!     I2C_C: ReadWrite<u32>   @ 0x3F80_4000 => [
+//! define_mmio_register! [
+//!     TIMERCHI<ReadOnly<u32>@(0x3F00_3008)>,
+//!     I2C_C<ReadWrite<u32>@(0x3F80_4000)> {
 //!         ENABLE     OFFSET(15),
 //!         IRQ_RX     OFFSET(10),
 //!         IRQ_TX     OFFSET(9),
@@ -59,7 +59,7 @@
 //!         CLEAR      OFFSET(4) BITS(2),
 //!         READ       OFFSET(1),
 //!         WRITE      OFFSET(0)
-//!     ]
+//!     }
 //! ];
 //!
 //! // With the name of the register given at the definition the contents and the fields are accessible like so:
