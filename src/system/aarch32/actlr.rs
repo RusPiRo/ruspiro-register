@@ -1,17 +1,17 @@
-/*********************************************************************************************************************** 
+/***********************************************************************************************************************
  * Copyright (c) 2019 by the authors
- * 
- * Author: André Borrmann 
+ *
+ * Author: André Borrmann
  * License: Apache 2.0
  **********************************************************************************************************************/
 
 //! # ACTLR Register
-//! 
+//!
 
-use crate::{define_aarch32_register, register_field};
 use crate::register::*;
+use crate::{define_aarch32_register, impl_system_register_rw, register_field};
 
-define_aarch32_register!{
+define_aarch32_register! {
     @actlr c1, 0, c0, 1 {
         // accessibility for CPUACTLR from lower exception levels
         CPUACTLR    OFFSET(0) [

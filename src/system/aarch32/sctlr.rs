@@ -1,17 +1,17 @@
-/*********************************************************************************************************************** 
+/***********************************************************************************************************************
  * Copyright (c) 2019 by the authors
- * 
- * Author: André Borrmann 
+ *
+ * Author: André Borrmann
  * License: Apache 2.0
  **********************************************************************************************************************/
 
 //! # SCTLR Register
-//! 
+//!
 
-use crate::{define_aarch32_register, register_field};
 use crate::register::*;
+use crate::{define_aarch32_register, impl_system_register_rw, register_field};
 
-define_aarch32_register!{
+define_aarch32_register! {
     @sctlr c1, 0, c0, 0 {
         // MMU enable flag
         M   OFFSET(0) [

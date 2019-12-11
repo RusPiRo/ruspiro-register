@@ -1,17 +1,17 @@
-/*********************************************************************************************************************** 
+/***********************************************************************************************************************
  * Copyright (c) 2019 by the authors
- * 
- * Author: André Borrmann 
+ *
+ * Author: André Borrmann
  * License: Apache 2.0
  **********************************************************************************************************************/
 
 //! # TCR_EL1 Register
-//! 
+//!
 
-use crate::{ define_aarch64_register, register_field };
 use crate::register::*;
+use crate::{define_aarch64_register, impl_system_register_rw, register_field};
 
-define_aarch64_register!{
+define_aarch64_register! {
     @tcr_el1<u32> {
         // Size offset of the memory reagion addressed by ttbr0_el1 (size = 2^(64-t0sz))
         T0SZ    OFFSET(0) BITS(6),

@@ -1,18 +1,18 @@
-/*********************************************************************************************************************** 
+/***********************************************************************************************************************
  * Copyright (c) 2019 by the authors
- * 
- * Author: André Borrmann 
+ *
+ * Author: André Borrmann
  * License: Apache 2.0
  **********************************************************************************************************************/
 
 //! # DACR Register
 //! Domain Access Control Register
-//! 
+//!
 
-use crate::{define_aarch32_register, register_field};
 use crate::register::*;
+use crate::{define_aarch32_register, impl_system_register_rw, register_field};
 
-define_aarch32_register!{
+define_aarch32_register! {
     @dacr c3, 0, c0, 0 {
         // MMU domain access permissions
         D0  OFFSET(0) BITS(2) [
@@ -143,5 +143,5 @@ define_aarch32_register!{
             // manager access treats every access as granted without checking permission bits in ttlb
             MANAGER:    0b11
         ]
-    }   
+    }
 }

@@ -15,6 +15,11 @@ keywords = ["RusPiRo", "register", "raspberrypi", "baremetal", "mmio"]
 categories = ["no-std", "embedded"]
 edition = "2018"
 
+[badges]
+travis-ci = { repository = "RusPiRo/ruspiro-register", branch = "master" }
+maintenance = { status = "actively-developed" }
+
+
 [lib]
 
 [dependencies]

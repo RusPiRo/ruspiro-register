@@ -1,37 +1,39 @@
-/*********************************************************************************************************************** 
+/***********************************************************************************************************************
  * Copyright (c) 2019 by the authors
- * 
- * Author: André Borrmann 
+ *
+ * Author: André Borrmann
  * License: Apache License 2.0
  **********************************************************************************************************************/
 
 //! # Register abstraction implementation
-//! 
+//!
 //! The provided implementation details of the register access abstraction are used by the corresponding macros
 //! of this crate. It is preferred to use the macros to properly define the registers to be used.
 
-use core::ptr::{read_volatile, write_volatile};
-use core::ops::{BitOr, BitAnd, Not, Shl, Shr};
 use core::cmp::PartialEq;
+use core::ops::{BitAnd, BitOr, Not, Shl, Shr};
+use core::ptr::{read_volatile, write_volatile};
 
 /// This trait is used to describe the register size/length as type specifier. The trait is only implemented for the
 /// internal types **u8**, **u16**, **u32** and **u64** to ensure safe register access sizes with compile time checking
-pub trait RegisterType: 
-    Copy + 
-    Clone +
-    PartialEq +
-    BitOr<Output=Self> +
-    BitAnd<Output=Self> + 
-    Not<Output=Self> +
-    Shl<Self, Output=Self> +
-    Shr<Self, Output=Self> { }
+pub trait RegisterType:
+    Copy
+    + Clone
+    + PartialEq
+    + BitOr<Output = Self>
+    + BitAnd<Output = Self>
+    + Not<Output = Self>
+    + Shl<Self, Output = Self>
+    + Shr<Self, Output = Self>
+{
+}
 
 // Internal macro to ease the assignment of the custom trait to supported register sizes
 #[doc(hidden)]
 macro_rules! registertype_impl {
     // invoke the macro for a given type t as often as types are provided when invoking the macro
     ($( $t:ty ),*) => ($(
-        impl RegisterType for $t { }        
+        impl RegisterType for $t { }
     )*)
 }
 
@@ -58,12 +60,14 @@ pub struct ReadWrite<T: RegisterType> {
 
 /*************** internal used macros to ease implementation ******************/
 macro_rules! registernew_impl {
-    () => (
+    () => {
         /// Create a new instance of the register access struct.
         pub const fn new(addr: u32) -> Self {
-            Self { ptr: addr as *mut T }
+            Self {
+                ptr: addr as *mut T,
+            }
         }
-    )
+    };
 }
 
 macro_rules! registerget_impl {
@@ -78,16 +82,15 @@ macro_rules! registerget_impl {
         #[inline]
         pub fn read(&self, field: RegisterField<T>) -> T {
             let val = self.get();
-            (val & field.mask) >> field.shift
+            (val >> field.shift) & field.mask
         }
 
         /// Read the value of the register into a RegisterFieldValue structure
         #[inline]
         pub fn read_value(&self, field: RegisterField<T>) -> RegisterFieldValue<T> {
-            let val = self.get();
             RegisterFieldValue {
                 field: field,
-                value: val & field.mask,
+                value: self.read(field),
             }
         }
     )
@@ -104,14 +107,14 @@ macro_rules! registerset_impl {
         /// Write the value of a specific register field
         #[inline]
         pub fn write(&self, field: RegisterField<T>, value: T) {
-            let val = (value << field.shift) & field.mask;
+            let val = (value & field.mask) << field.shift;
             self.set(val);
         }
 
         /// Write the value of a given RegisterFieldValue to the register
         #[inline]
         pub fn write_value(&self, fieldvalue: RegisterFieldValue<T>) {
-            self.write(fieldvalue.field, fieldvalue.value >> fieldvalue.field.shift);
+            self.write(fieldvalue.field, fieldvalue.value);
         }
     )
 }
@@ -134,17 +137,17 @@ impl<T: RegisterType> ReadWrite<T> {
     /// Udate a register field with a given value
     #[inline]
     pub fn modify(&self, field: RegisterField<T>, value: T) -> T {
-
         let old_val = self.get();
-        let new_val = (old_val & !field.mask) | ((value << field.shift) & field.mask);
+        let new_val =
+            (old_val & !(field.mask << field.shift)) | ((value & field.mask) << field.shift);
+
         self.set(new_val);
-        
         new_val
     }
 
     #[inline]
     pub fn modify_value(&self, fieldvalue: RegisterFieldValue<T>) -> RegisterFieldValue<T> {
-        let new_val = self.modify(fieldvalue.field, fieldvalue.value >> fieldvalue.field.shift);
+        let new_val = self.modify(fieldvalue.field, fieldvalue.value);
         RegisterFieldValue {
             field: fieldvalue.field,
             value: new_val,
@@ -180,28 +183,28 @@ macro_rules! registerfield_impl {
         impl RegisterField<$t> {
             /// Create a new register field definition with the mask and the shift offset for this
             /// mask. The offset is the bit offset this field begins.
-            #[inline]            
+            #[inline]
             pub const fn new(mask: $t, shift: $t) -> RegisterField<$t> {
                 Self {
-                    mask: mask,// << shift,
+                    mask: mask,
                     shift: shift,
                 }
             }
 
             /// retrieve the current mask of the field shifted to its correct position
             #[inline]
-            pub(crate) fn mask(&self) -> $t {
+            pub fn mask(&self) -> $t {
                 self.mask.checked_shl(self.shift as u32).unwrap_or(0)
             }
 
             /// retrieve the current shift of the field
             #[allow(dead_code)]
             #[inline]
-            pub(crate) fn shift(&self) -> $t {
+            pub fn shift(&self) -> $t {
                 self.shift
             }
         }
-        
+
         impl RegisterFieldValue<$t> {
             /// Create a new fieldvalue based on the field definition and the value given
             #[inline]

@@ -1,21 +1,21 @@
-/*********************************************************************************************************************** 
+/***********************************************************************************************************************
  * Copyright (c) 2019 by the authors
- * 
- * Author: André Borrmann 
+ *
+ * Author: André Borrmann
  * License: ???
  **********************************************************************************************************************/
 
 //! # System register definitions
-//! 
+//!
 
-#[cfg(target_arch="aarch64")]
+#[cfg(target_arch = "aarch64")]
 pub mod aarch64;
-#[cfg(target_arch="aarch64")]
+#[cfg(target_arch = "aarch64")]
 pub use aarch64::*;
 
-#[cfg(target_arch="arm")]
+#[cfg(target_arch = "arm")]
 pub mod aarch32;
-#[cfg(target_arch="arm")]
+#[cfg(target_arch = "arm")]
 pub use aarch32::*;
 
 /// assembly NOP instruction
