@@ -22,20 +22,20 @@ The register access types are ``ReadOnly``, ``WriteOnly`` and ``ReadWrite``. The
 ```
 use ruspiro_register::*;
 
-define_registers! [
-    RO_REGISTER: ReadOnly<u32>, 0xFF00_0000,
-    WO_REGISTER: WriteOnly<u8>, 0xFF00_0004 => [
+define_mmio_register! [
+    RO_REGISTER<ReadOnly<u8>@(0xFF00_0000)>,
+    WO_REGISTER<WriteOnly<u16>@(0xFF00_0004)> {
         FLAG1   OFFSET(0) BITS(2),
         FLAG2   OFFSET(2),
         FLAG3   OFFSET(3) BITS(4)
-    ],
-    RW_REGISTER: ReadWrite<u16>, 
+    },
+    RW_REGISTER<ReadWrite<u32>@(0xFF00_0008)> 
 ];
 
 fn main() {
     let _ = RO_REGISTER::Register.get(); // read raw value from register
 
-    WO_REGISTER::Register.write(WO_REGISTER::FLAG3, 0b1010); // write only field FLAG3 into the register
+    WO_REGISTER::Register.write_value(WO_REGISTER::FLAG3::with_value(0b1010)); // write only field FLAG3 into the register
     
     RW_REGISTER::Register.set(0xFFF); // write raw value to register
 }

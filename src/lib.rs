@@ -8,13 +8,14 @@
 #![no_std]
 #![feature(asm, const_fn)]
 
-//! # System register access
+//! # System and MMIO register access
+//! ## System register access
 //!
 //! Definitions and simple access to the system registers used in the different RusPiRo crates. Depending
 //! on the target architecture the crate will be build for it contains the definitions of the Aarch64 or the
 //! Aarch32 CP15 system register.
 //!
-//! # Usage
+//! ## Usage
 //!
 //! ```
 //! use ruspiro_register::system::*;
@@ -30,11 +31,12 @@
 //! # }
 //! ```
 //!
-//! # MMIO register abstraction
+//! ## MMIO register abstraction
 //!
-//! The crate provides a hopefully simple to use compiletime type safe abstraction of MMIO registers of the Raspberry Pi.
+//! Simple to use and compiletime type safe abstraction of memory mapped (MMIO) registers of the 
+//! Raspberry Pi.
 //!
-//! # Usage
+//! ## Usage
 //!
 //! Register defintitions are simple and straight forward using the macros provided by this crate.
 //! In your code you can define registers like this:

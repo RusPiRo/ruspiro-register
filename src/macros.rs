@@ -7,7 +7,7 @@
 
 //! # Register definition macros
 //!
-//! Provide macros to define MMIO register representation.
+//! The macros are used to simplify the definition of system registers as well as MMIO register.
 //!
 
 /// Helper macro to define the fields a register may contain of.<br>
@@ -45,7 +45,7 @@ macro_rules! register_field_values {
     };
 }
 
-/// Macro to define a single register with a specific defined access mode.<br>
+/// Macro to define a MMIO register with specific defined access mode.<br>
 /// The access mode could one of: **ReadOnly**, **WriteOnly**, **ReadWrite**.<br>
 /// The register size/width could be one of: **u8**, **u16**, **u32**, **u64**
 ///
