@@ -5,25 +5,18 @@
  * License: Apache 2.0
  **********************************************************************************************************************/
 
-//! # CPACR_EL1 Register
-//!
+//! # ACTLR_EL3 Register
+//! Auxiliry Control Register EL2
 
 use crate::register::*;
 use crate::{define_aarch64_register, impl_system_register_rw, register_field};
 
 define_aarch64_register! {
-    @cpacr_el1<u64> {
-        // trap floating point instractions in EL0/1
-        FPEN OFFSET(20) BITS(2) [
-            TRAP_ALL: 0b00,
-            TRAP_EL0: 0b01,
-            TRAP_EL0_OR_1: 0b10,
-            NO_TRAP:  0b11
-        ],
-        // trap trace functions in EL0/1
-        TTA OFFSET(28) [
-            NO_TRAP: 0b0,
-            TRAP:    0b1
-        ]
+    @actlr_el3<u32> {
+        CPUACTLR_EL1 OFFSET(0),
+        CPUECTLR_EL1 OFFSET(1),
+        L2CTLR_EL1 OFFSET(4),
+        L2ECTLR_EL1 OFFSET(5),
+        L2ACTLR_EL1 OFFSET(6)
     }
 }

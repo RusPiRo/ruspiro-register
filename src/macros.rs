@@ -131,7 +131,7 @@ macro_rules! register_field_values {
 #[macro_export]
 macro_rules! define_mmio_register {
     // REGISTER_NAME<ReadWrite<TYPE>@ADDRESS> { FIELD OFFSET(num) BITS(num) [ VALUE: val ] }
-    ($($name:ident<$access:ident<$t:ty>@($addr:expr)> $(
+    ($($vis:vis $name:ident<$access:ident<$t:ty>@($addr:expr)> $(
         { $(
                 $field:ident OFFSET($offset:literal) $(BITS($bits:literal))?
                 $([$($enum:ident : $value:expr),*])?
@@ -140,7 +140,7 @@ macro_rules! define_mmio_register {
         $(
             #[allow(non_snake_case)]
             #[allow(non_upper_case_globals)]
-            mod $name {
+            $vis mod $name {
                 use $crate::register::*;
                 use super::*;
                 pub const Register: $access<$t> = $access::<$t>::new($addr);

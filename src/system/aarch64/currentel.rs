@@ -13,6 +13,6 @@ use crate::{define_aarch64_register, impl_system_register_rw, register_field};
 
 define_aarch64_register! {
     @currentEl<u64> {
-        el OFFSET(2) BITS(2)
+        EL OFFSET(2) BITS(2)
     }
 }
