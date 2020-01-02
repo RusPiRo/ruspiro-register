@@ -4,7 +4,7 @@
  * Author: André Borrmann
  * License: Apache License 2.0
  **********************************************************************************************************************/
-#![doc(html_root_url = "https://docs.rs/ruspiro-register/0.3.1")]
+#![doc(html_root_url = "https://docs.rs/ruspiro-register/0.4.0")]
 #![no_std]
 #![feature(asm, const_fn, doc_cfg)]
 
@@ -17,18 +17,28 @@
 //!
 //! ## Usage
 //!
-//! ```
+//! ```no_run
 //! use ruspiro_register::system::*;
 //!
-//! # fn main() {
+//! #[cfg(target_arch="aarch64")]
+//! fn enable_mmu() {
 //!     // update the system control register in aarch64 to enable caching and the MMU in EL1
-//! # #[cfg(target_arch="aarch64")]
 //!     sctlr_el1::write(
 //!         sctlr_el1::M::ENABLE | // MMU
 //!         sctlr_el1::C::ENABLE | // data cache
 //!         sctlr_el1::I::ENABLE   // instruction cache
 //!     );
-//! # }
+//! }
+//! 
+//! #[cfg(target_arch="arm")]
+//! fn enable_mmu() {
+//!     // update the system control register in aarch32 to enable caching and the MMU
+//!     sctlr::write(
+//!         sctlr::M::ENABLE | // MMU
+//!         sctlr::C::ENABLE | // data cache
+//!         sctlr::I::ENABLE   // instruction cache
+//!     );
+//! }
 //! ```
 //!
 //! ## MMIO register abstraction
@@ -67,11 +77,11 @@
 //!
 //! // With the name of the register given at the definition the contents and the fields are accessible like so:
 //!
-//! # fn main() {
-//! let _ = TIMERCHI::Register.get(); // get the raw register value
-//! let _ = I2C_C::Register.read(I2C_C::ENABLE); // get the value of the requested register field
-//! I2C_C::Register.modify(I2C_C::CLEAR, 0x1); // update a specific field value of the register
-//! # }
+//! fn test_mmio_register() {
+//!     let _ = TIMERCHI::Register.get(); // get the raw register value
+//!     let _ = I2C_C::Register.read(I2C_C::ENABLE); // get the value of the requested register field
+//!     I2C_C::Register.modify(I2C_C::CLEAR, 0x1); // update a specific field value of the register
+//! }
 //! ```
 //!
 

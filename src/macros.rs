@@ -150,8 +150,9 @@ macro_rules! define_mmio_register {
                         $crate::register_field!($t, $field, $offset $(, $bits)?);
                         pub mod $field {
                             use super::*;
-                            /// Create a ``RegisterFieldValue`` from the ``RegisterField`` definition
-                            /// and a given value
+                            /// Create a ``RegisterFieldValue`` from the current ``RegisterField``
+                            /// of this ``Register`` from a given value
+                            #[inline]
                             pub const fn with_value(value: $t) -> RegisterFieldValue<$t> {
                                 RegisterFieldValue::<$t>::new($field, value)
                             }
@@ -312,12 +313,20 @@ macro_rules! define_registers {
 #[macro_export]
 macro_rules! impl_system_register_rw {
     ($t:ty) => {
+        /// Update the contents of a register from the ``RegisterFieldValue`` given. This will
+        /// only change the bits the ``RegisterField`` definition specifies.
         #[inline]
         pub fn write(field_value: RegisterFieldValue<$t>) {
             let raw_value = (get() & !field_value.mask()) | field_value.raw_value();
             set(raw_value);
         }
 
+        /// Read the contents of a specific ``RegisterField``. The returned value is already shifted
+        /// to the right to start at bit 0. This means for a field value stored in the register at
+        /// bit offset 3, the returned value is already shifted by 3 bits to the right.
+        /// For example:
+        /// If register raw value is 0b10110, the returned value for a register field specified as
+        /// bits\[4:3\] would be 0b01. No further "masking" or "bit-shift" required
         #[inline]
         pub fn read(field: RegisterField<$t>) -> RegisterFieldValue<$t> {
             let raw_value = get() & field.mask();
@@ -376,6 +385,9 @@ macro_rules! define_aarch64_register {
 
                 register_field!($t, Field, $offset $(, $bits)?);
 
+                /// Create a ``RegisterFieldValue`` from the current ``RegisterField``
+                /// of this ``Register`` from a given value
+                #[inline]
                 pub fn with_value(value: $t) -> RegisterFieldValue<$t> {
                     RegisterFieldValue::<$t>::new(Field, value)
                 }
@@ -389,6 +401,7 @@ macro_rules! define_aarch64_register {
             }
         )*
 
+        /// Read the raw register contents using the appropriate assembly
         #[inline]
         pub fn get() -> $t {
             let raw_value: $t;
@@ -398,6 +411,7 @@ macro_rules! define_aarch64_register {
             raw_value
         }
 
+        /// Write the raw register contents using the appropriate contents
         #[inline]
         pub fn set(raw_value: $t) {
             unsafe {
@@ -484,6 +498,8 @@ macro_rules! define_aarch32_register {
 
                 register_field!(u32, Field, $offset $(, $bits)?);
 
+                /// Create a ``RegisterFieldValue`` from the current ``RegisterField``
+                /// of this ``Register`` from a given value
                 #[inline]
                 pub fn with_value(value: u32) -> RegisterFieldValue<u32> {
                     RegisterFieldValue::<u32>::new(Field, value)
