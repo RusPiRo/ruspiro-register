@@ -6,7 +6,7 @@
  **********************************************************************************************************************/
 #![doc(html_root_url = "https://docs.rs/ruspiro-register/0.3.1")]
 #![no_std]
-#![feature(asm, const_fn)]
+#![feature(asm, const_fn, doc_cfg)]
 
 //! # System and MMIO register access
 //! ## System register access
@@ -33,7 +33,7 @@
 //!
 //! ## MMIO register abstraction
 //!
-//! Simple to use and compiletime type safe abstraction of memory mapped (MMIO) registers of the
+//! Simple to use and compile time type safe abstraction of memory mapped (MMIO) registers of the
 //! Raspberry Pi.
 //!
 //! ## Usage
@@ -45,12 +45,15 @@
 //!
 //! // define a single register without any specific fields, like the free running system timer counter low value
 //! // of the Raspberry Pi 3. Valid register size types are u8, u16, u32, u64.
-//! define_register!( TIMERCLO: ReadOnly<u32> @ 0x3F00_3004 );
+//! define_mmio_register!( TIMERCLO<ReadOnly<u32>@(0x3F00_3004)> );
 //!
-//! // define a list of registers that may ore may not contain a specific field configuration
+//! // define a list of registers that may or may not contain a specific field configuration
 //! define_mmio_register! [
+//!     /// High 32Bit's of the free-running counter
 //!     TIMERCHI<ReadOnly<u32>@(0x3F00_3008)>,
+//!     /// The I²C control register
 //!     I2C_C<ReadWrite<u32>@(0x3F80_4000)> {
+//!         /// Flag to enable the I²C peripheral
 //!         ENABLE     OFFSET(15),
 //!         IRQ_RX     OFFSET(10),
 //!         IRQ_TX     OFFSET(9),
@@ -72,10 +75,10 @@
 //! ```
 //!
 
-pub mod macros;
+mod macros;
 pub use self::macros::*;
 
-pub mod register;
+mod register;
 pub use self::register::*;
 
 pub mod system;

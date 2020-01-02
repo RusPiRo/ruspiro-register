@@ -18,13 +18,13 @@ define_aarch32_register! {
         N   OFFSET(0) BITS(3),
         // Disable translation table walk for TTBR0
         PD0 OFFSET(4) [
-            ENABLED: 0,
-            DISABLED: 0
+            ENABLED = 0,
+            DISABLED = 0
         ],
         // Disable translation table walk for TTBR1
         PD1 OFFSET(5) [
-            ENABLED: 0,
-            DISABLED: 0
+            ENABLED = 0,
+            DISABLED = 0
         ],
         // extended address enable flag, if enabled it uses 64Bit long descriptor format
         EAE OFFSET(31)
