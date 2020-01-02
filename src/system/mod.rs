@@ -8,14 +8,16 @@
 //! # System register definitions
 //!
 
-#[cfg(target_arch = "aarch64")]
+#[cfg(any(target_arch = "aarch64", test, doc, doctest))]
+#[doc(cfg(target_arch = "aarch64"))]
 pub mod aarch64;
-#[cfg(target_arch = "aarch64")]
+#[cfg(any(target_arch = "aarch64", test, doc, doctest))]
 pub use aarch64::*;
 
-#[cfg(target_arch = "arm")]
+#[cfg(any(target_arch = "arm", test, doc, doctest))]
+#[doc(cfg(target_arch = "arm"))]
 pub mod aarch32;
-#[cfg(target_arch = "arm")]
+#[cfg(any(target_arch = "arm", test, doc, doctest))]
 pub use aarch32::*;
 
 /// assembly NOP instruction

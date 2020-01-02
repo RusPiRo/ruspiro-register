@@ -1,15 +1,15 @@
 [package]
 name = "ruspiro-register"
 authors = ["André Borrmann <pspwizard@gmx.de>"]
-version = "0.3.1" # remember to update html_root_url
+version = "0.4.0" # remember to update html_root_url
 description = """
 The crate provides simple to use macros to define MMIO registers representations allowing safe access to their contents.
 In addition this crate defines specific aarch64 and aarch32(CP15) registers to safely use them in rust code. This
 reduces the need of 'unsafe' calls.
 """
 license = "Apache-2.0"
-repository = "https://github.com/RusPiRo/ruspiro-register/tree/v0.3.0"
-documentation = "https://docs.rs/ruspiro-register/0.3.1"
+repository = "https://github.com/RusPiRo/ruspiro-register/tree/v0.4.0"
+documentation = "https://docs.rs/ruspiro-register/0.4.0"
 readme = "README.md"
 keywords = ["RusPiRo", "register", "raspberrypi", "baremetal", "mmio"]
 categories = ["no-std", "embedded"]
@@ -18,7 +18,6 @@ edition = "2018"
 [badges]
 travis-ci = { repository = "RusPiRo/ruspiro-register", branch = "master" }
 maintenance = { status = "actively-developed" }
-
 
 [lib]
 

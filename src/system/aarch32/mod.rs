@@ -6,7 +6,7 @@
  **********************************************************************************************************************/
 
 //! # Aarch32 CP15 System Register
-//!
+//! Aarch32 register definitions are only available when compiled for **Arm** target architecture
 
 pub mod actlr;
 pub mod dacr;

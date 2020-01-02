@@ -18,28 +18,22 @@
 macro_rules! register_field {
     ($t:ty, $field:ident, $offset:expr) => {
         #[allow(unused_variables, dead_code)]
+        #[doc(hidden)]
         pub const $field: RegisterField<$t> = RegisterField::<$t>::new(1, $offset);
     };
     ($t:ty, $field:ident, $offset:expr, $bits:expr) => {
         #[allow(unused_variables, dead_code)]
+        #[doc(hidden)]
         pub const $field: RegisterField<$t> = RegisterField::<$t>::new((1 << $bits) - 1, $offset);
-    };
-
-
-    ($t:ty, $field:ident, $offset:expr, $bits:expr, [$(enum:ident : value:expr),*]) => {
-        #[allow(unused_variables, dead_code)]
-        //pub const $field: RegisterField<$t> = RegisterField::<$t>::new((1 << $bits) - 1, $offset);
-    };
-    ($t:ty, $field:ident, $offset:expr, [$(enum:ident : value:expr),*]) => {
-        //register_field!($t, $field, $offset, 1, $(enum:ident : value:expr),*);
     };
 }
 
 #[doc(hidden)]
 #[macro_export]
 macro_rules! register_field_values {
-    ($field:ident, $t:ty, $($enum:ident : $value:expr),*) => {
+    ($field:ident, $t:ty, $($($fvdoc:expr)?, $enum:ident = $value:expr),*) => {
         $(
+            $(#[doc = $fvdoc])?
             pub const $enum:RegisterFieldValue::<$t> = RegisterFieldValue::<$t>::new($field, $value);
         )*
     };
@@ -87,7 +81,7 @@ macro_rules! register_field_values {
 ///     FOO<ReadWrite<u32>@(0x3F20_0000)>,
 ///     BAR<ReadOnly<u32>@(0x3F20_0010)> {
 ///         BAZ OFFSET(0) BITS(2) [
-///             VAL1: 0b10
+///             VAL1 = 0b10
 ///         ]
 ///     }
 /// );
@@ -98,15 +92,19 @@ macro_rules! register_field_values {
 /// ```no_run
 /// # use ruspiro_register::*;
 /// define_mmio_register!(
+///     /// A MMIO Register FOO
 ///     FOO<ReadWrite<u32>@(0x3F20_0000)> {
+///         /// This is a register field BAR
 ///         BAR OFFSET(3) BITS(3),
+///         /// This is a register field BAZ with enum like field values
 ///         BAZ OFFSET(6) BITS(3) [
-///             VAL1:  0b000,
-///             VAL2:  0b010
+///             /// This is a value of the register field
+///             VAL1 = 0b000,
+///             VAL2 = 0b010
 ///         ],
 ///         BAL OFFSET(9) BITS(2) [
-///             VAL1: 0b01,
-///             VAL2: 0b11
+///             VAL1 = 0b01,
+///             VAL2 = 0b11
 ///         ]
 ///     }
 /// );
@@ -122,7 +120,7 @@ macro_rules! register_field_values {
 ///         FOO::BAZ::VAL1 | FOO::BAL::VAL2
 ///     );
 ///
-///     // write a specif value to a register field that does not provide default/enum values
+///     // write a specific value to a register field that does not provide default/enum values
 ///     FOO::Register.write_value(
 ///         FOO::BAR::with_value(0b010)
 ///     );
@@ -131,29 +129,35 @@ macro_rules! register_field_values {
 #[macro_export]
 macro_rules! define_mmio_register {
     // REGISTER_NAME<ReadWrite<TYPE>@ADDRESS> { FIELD OFFSET(num) BITS(num) [ VALUE: val ] }
-    ($($name:ident<$access:ident<$t:ty>@($addr:expr)> $(
+    ($($(#[doc = $rdoc:expr])? $vis:vis $name:ident<$access:ident<$t:ty>@($addr:expr)> $(
         { $(
+                $(#[doc = $fdoc:expr])?
                 $field:ident OFFSET($offset:literal) $(BITS($bits:literal))?
-                $([$($enum:ident : $value:expr),*])?
+                $([$($(#[doc = $fvdoc:expr])? $enum:ident = $value:expr),*])?
         ),* }
     )?),*) => {
         $(
             #[allow(non_snake_case)]
             #[allow(non_upper_case_globals)]
-            mod $name {
-                use $crate::register::*;
+            $vis mod $name {
+                use $crate::*;
                 use super::*;
+                $(#[doc = $rdoc])?
                 pub const Register: $access<$t> = $access::<$t>::new($addr);
                 $(
                     $(
+                        $(#[doc = $fdoc])?
                         $crate::register_field!($t, $field, $offset $(, $bits)?);
                         pub mod $field {
                             use super::*;
+                            /// Create a ``RegisterFieldValue`` from the current ``RegisterField``
+                            /// of this ``Register`` from a given value
+                            #[inline]
                             pub const fn with_value(value: $t) -> RegisterFieldValue<$t> {
                                 RegisterFieldValue::<$t>::new($field, value)
                             }
                             $(
-                                $crate::register_field_values!($field, $t, $($enum:$value),*);
+                                $crate::register_field_values!($field, $t, $($($fvdoc)?, $enum = $value),*);
                             )*
                         }
                     )*
@@ -166,7 +170,7 @@ macro_rules! define_mmio_register {
 ///
 /// # Examples
 ///
-/// ```no_run
+/// ```ignore
 /// # use ruspiro_register::*;
 /// define_register!( GPFSEL0: ReadWrite<u32> @ 0x3F20_0000 );
 ///
@@ -175,7 +179,7 @@ macro_rules! define_mmio_register {
 /// # }
 /// ```
 ///
-/// ```no_run
+/// ```ignore
 /// # use ruspiro_register::*;
 /// const GPIO_BASE:u32 = 0x3F00_0000;
 ///
@@ -188,7 +192,7 @@ macro_rules! define_mmio_register {
 ///
 /// To pass a more specific definition of the fields the register represents they could be added in the [] of the definition
 /// like so:
-/// ```no_run
+/// ```ignore
 /// # use ruspiro_register::*;
 ///
 /// define_register!( GPFSEL2: ReadWrite<u32> @ 0x3F20_0000 => [
@@ -272,7 +276,7 @@ macro_rules! define_register {
 ///
 /// # Examples
 ///
-/// ```no_run
+/// ```ignore
 /// # use ruspiro_register::*;
 ///
 /// define_registers! [
@@ -309,12 +313,20 @@ macro_rules! define_registers {
 #[macro_export]
 macro_rules! impl_system_register_rw {
     ($t:ty) => {
+        /// Update the contents of a register from the ``RegisterFieldValue`` given. This will
+        /// only change the bits the ``RegisterField`` definition specifies.
         #[inline]
         pub fn write(field_value: RegisterFieldValue<$t>) {
             let raw_value = (get() & !field_value.mask()) | field_value.raw_value();
             set(raw_value);
         }
 
+        /// Read the contents of a specific ``RegisterField``. The returned value is already shifted
+        /// to the right to start at bit 0. This means for a field value stored in the register at
+        /// bit offset 3, the returned value is already shifted by 3 bits to the right.
+        /// For example:
+        /// If register raw value is 0b10110, the returned value for a register field specified as
+        /// bits\[4:3\] would be 0b01. No further "masking" or "bit-shift" required
         #[inline]
         pub fn read(field: RegisterField<$t>) -> RegisterFieldValue<$t> {
             let raw_value = get() & field.mask();
@@ -326,25 +338,31 @@ macro_rules! impl_system_register_rw {
 ///
 /// # Examples
 /// ```no_run
+/// # #![feature(asm)]
 /// # use ruspiro_register::*;
 ///
-/// # #[cfg(target_arch="aarch64")]
-/// define_aarch64_register! {
+/// define_aarch64_register!(
+///     /// Aarch64 register foo as 32Bit register
+///     /// It's always a Read/Write register definition, check the register documentation
+///     /// to verify write's are allowed
 ///     foo<u32> {
+///         /// Register field BAR with it's enum fields
 ///         BAR OFFSET(0) [
-///             VAL1: 0b1,
-///             VAL0: 0b0
+///             /// Field value VAL1
+///             VAL1 = 0b1,
+///             VAL0 = 0b0
 ///         ],
+///         /// Register field BAR with it's own
+///         /// enum like field values
 ///         BAZ OFFSET(1) BITS(2) [
-///             VAL1: 0b01,
-///             VAL2: 0b10,
-///             VAL3: 0b11
+///             VAL1 = 0b01,
+///             VAL2 = 0b10,
+///             VAL3 = 0b11
 ///         ]
 ///     }
-/// }
+/// );
 ///
-/// # fn main() {
-/// # #[cfg(target_arch="aarch64")]
+/// # fn doc() {
 ///     foo::write(
 ///         foo::BAR::VAL1 | foo::BAZ::VAL2
 ///     );
@@ -352,8 +370,14 @@ macro_rules! impl_system_register_rw {
 ///
 #[macro_export]
 macro_rules! define_aarch64_register {
-    (@$name:ident<$t:ty> { $($field:ident OFFSET($offset:expr) $(BITS($bits:expr))? $([ $($enum:ident : $value:expr),* ])?),* }) => {
+    (@$(#[doc = $rdoc:expr])*
+      $name:ident<$t:ty> {
+        $($(#[doc = $fdoc:expr])* $field:ident OFFSET($offset:expr) $(BITS($bits:expr))? $([
+            $($(#[doc = $fvdoc:expr])* $enum:ident = $value:expr),*
+        ])?),*
+      }) => {
         $(
+            $(#[doc = $fdoc])*
             #[allow(non_snake_case)]
             #[allow(non_upper_case_globals)]
             pub mod $field {
@@ -361,16 +385,23 @@ macro_rules! define_aarch64_register {
 
                 register_field!($t, Field, $offset $(, $bits)?);
 
+                /// Create a ``RegisterFieldValue`` from the current ``RegisterField``
+                /// of this ``Register`` from a given value
+                #[inline]
                 pub fn with_value(value: $t) -> RegisterFieldValue<$t> {
                     RegisterFieldValue::<$t>::new(Field, value)
                 }
 
                 $(
-                    $(pub const $enum: RegisterFieldValue::<$t> = RegisterFieldValue::<$t>::new(Field, $value);)*
+                    $(
+                        $(#[doc = $fvdoc])*
+                        pub const $enum: RegisterFieldValue::<$t> = RegisterFieldValue::<$t>::new(Field, $value);
+                    )*
                 )*
             }
         )*
 
+        /// Read the raw register contents using the appropriate assembly
         #[inline]
         pub fn get() -> $t {
             let raw_value: $t;
@@ -380,6 +411,7 @@ macro_rules! define_aarch64_register {
             raw_value
         }
 
+        /// Write the raw register contents using the appropriate contents
         #[inline]
         pub fn set(raw_value: $t) {
             unsafe {
@@ -390,42 +422,58 @@ macro_rules! define_aarch64_register {
         impl_system_register_rw!($t);
 
     };
-/*
-    ($name:ident<$t:ty> { $($field:ident OFFSET($offset:expr) $(BITS($bits:expr))? $([ $($enum:ident : $value:expr),* ])?),* }) => {
+
+    ($(#[doc = $rdoc:expr])*
+     $name:ident<$t:ty> {
+        $($(#[doc = $fdoc:expr])*
+        $field:ident OFFSET($offset:expr) $(BITS($bits:expr))? $([
+            $($(#[doc = $fvdoc:expr])* $enum:ident = $value:expr),*
+        ])?),*
+    }) => {
+        $(#[doc = $rdoc])*
         #[allow(non_snake_case)]
         #[allow(non_upper_case_globals)]
         pub mod $name {
-            use super::*;
-            define_system_register!{
-                @$name<$t> { $($field OFFSET($offset) $(BITS($bits))? $([ $($enum : $value),* ])?),* }
+            use $crate::*;
+            $crate::define_aarch64_register!{
+                @$(#[doc = $rdoc])?
+                $name<$t> {
+                    $($(#[doc = $fdoc])* $field OFFSET($offset) $(BITS($bits))? $([
+                        $(
+                            $(#[doc = $fvdoc])*
+                            $enum = $value
+                        ),*
+                    ])?),*
+                }
             }
         }
     };
-    */
 }
 
 /// Macro to define an Aarch32 (CP15) system register and its fields
 ///
 /// # Examples
-/// ```
+/// ```no_run
+/// # #![feature(asm)]
 /// # use ruspiro_register::*;
-/// # #[cfg(target_arch="arm")]
-/// define_aarch32_register! {
-///     foo {
+/// define_aarch32_register!(
+///     /// This is a aarch32 register
+///     foo c1, 0, c0, 1 {
+///         /// This is the field BAR of this register
 ///         BAR OFFSET(0) [
-///             VAL1: 0b1,
-///             VAL0: 0b0
+///             /// This is a field value of this register field
+///             VAL1 = 0b1,
+///             VAL0 = 0b0
 ///         ],
 ///         BAZ OFFSET(1) BITS(2) [
-///             VAL1: 0b01,
-///             VAL2: 0b10,
-///             VAL3: 0b11
+///             VAL1 = 0b01,
+///             VAL2 = 0b10,
+///             VAL3 = 0b11
 ///         ]
 ///     }
-/// }
+/// );
 ///
-/// # fn main() {
-/// # #[cfg(target_arch="arm")]
+/// # fn doc() {
 ///     foo::write(
 ///         foo::BAR::VAL1 | foo::BAZ::VAL2
 ///     );
@@ -433,8 +481,16 @@ macro_rules! define_aarch64_register {
 ///
 #[macro_export]
 macro_rules! define_aarch32_register {
-    (@$name:ident $crn:ident, $op1:tt, $crm:ident, $op2:tt { $($field:ident OFFSET($offset:expr) $(BITS($bits:expr))? $([ $($enum:ident : $value:expr),* ])?),* }) => {
+    (@$(#[doc = $rdoc:expr])*
+       $name:ident $crn:ident, $op1:tt, $crm:ident, $op2:tt {
+            $(
+                $(#[doc = $fdoc:expr])*
+                $field:ident OFFSET($offset:expr) $(BITS($bits:expr))? $([
+                    $($(#[doc = $fvdoc:expr])* $enum:ident = $value:expr),*
+                ])?),*
+    }) => {
         $(
+            $(#[doc = $fdoc])*
             #[allow(non_snake_case)]
             #[allow(non_upper_case_globals)]
             pub mod $field {
@@ -442,13 +498,18 @@ macro_rules! define_aarch32_register {
 
                 register_field!(u32, Field, $offset $(, $bits)?);
 
+                /// Create a ``RegisterFieldValue`` from the current ``RegisterField``
+                /// of this ``Register`` from a given value
                 #[inline]
                 pub fn with_value(value: u32) -> RegisterFieldValue<u32> {
                     RegisterFieldValue::<u32>::new(Field, value)
                 }
 
                 $(
-                    $(pub const $enum: RegisterFieldValue::<u32> = RegisterFieldValue::<u32>::new(Field, $value);)*
+                    $(
+                        $(#[doc = $fvdoc])*
+                        pub const $enum: RegisterFieldValue::<u32> = RegisterFieldValue::<u32>::new(Field, $value);
+                    )*
                 )*
             }
         )*
@@ -481,16 +542,38 @@ macro_rules! define_aarch32_register {
 
         impl_system_register_rw!(u32);
     };
-/*
-    ($name:ident $crn:ident, $op1:tt, $crm:ident, $op2:tt { $($field:ident OFFSET($offset:expr) $(BITS($bits:expr))? $([ $($enum:ident : $value:expr),* ])?),* }) => {
+
+    ($(#[doc = $rdoc:expr])*
+     $name:ident $crn:ident, $op1:tt, $crm:ident, $op2:tt {
+        $(
+            $(#[doc = $fdoc:expr])*
+            $field:ident OFFSET($offset:expr) $(BITS($bits:expr))? $([
+                $(
+                    $(#[doc = $fvdoc:expr])*
+                    $enum:ident = $value:expr
+                ),*
+            ])?
+        ),*
+    }) => {
+        $(#[doc = $rdoc])*
         #[allow(non_snake_case)]
         #[allow(non_upper_case_globals)]
         pub mod $name {
-            use super::*;
-            define_system_register!{
-                @$name $crn, $op1, $crm, $op2 { $($field OFFSET($offset) $(BITS($bits))? $([ $($enum : $value),* ])?),* }
+            use $crate::*;
+            $crate::define_aarch32_register!{
+                @$(#[doc = $rdoc])*
+                $name $crn, $op1, $crm, $op2 {
+                    $(
+                        $(#[doc = $fdoc])*
+                        $field OFFSET($offset) $(BITS($bits))? $([
+                            $(
+                                $(#[doc = $fvdoc])*
+                                $enum = $value
+                            ),*
+                        ])?
+                    ),*
+                }
             }
         }
     };
-    */
 }
