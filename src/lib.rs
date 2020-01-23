@@ -4,7 +4,7 @@
  * Author: André Borrmann
  * License: Apache License 2.0
  **********************************************************************************************************************/
-#![doc(html_root_url = "https://docs.rs/ruspiro-register/0.4.0")]
+#![doc(html_root_url = "https://docs.rs/ruspiro-register/0.4.1")]
 #![no_std]
 #![feature(asm, const_fn, doc_cfg)]
 
@@ -29,7 +29,7 @@
 //!         sctlr_el1::I::ENABLE   // instruction cache
 //!     );
 //! }
-//! 
+//!
 //! #[cfg(target_arch="arm")]
 //! fn enable_mmu() {
 //!     // update the system control register in aarch32 to enable caching and the MMU
