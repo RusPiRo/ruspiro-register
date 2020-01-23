@@ -1,4 +1,8 @@
 # Changelog
+## :pizza: v0.4.1
+  - ### :detective: Fixes
+    - Fix issue that only single line comments were allowed in ``define_mmio_register!`` macro expansion
+    
 ## :pizza: v0.4.0
   - ### :bulb: Features
     1. Enable MMIO register definitions to set visibility in defining crate.<br>

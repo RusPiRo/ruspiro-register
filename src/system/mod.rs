@@ -41,5 +41,11 @@ pub fn isb() {
 /// assembly DSB instruction
 #[inline(always)]
 pub fn dsb() {
-    unsafe { asm!("dsb") };
+    unsafe { asm!("dsb sy") };
+}
+
+/// assembly DSB instruction
+#[inline(always)]
+pub fn dmb() {
+    unsafe { asm!("dmb sy") };
 }

@@ -93,10 +93,12 @@ macro_rules! register_field_values {
 /// # use ruspiro_register::*;
 /// define_mmio_register!(
 ///     /// A MMIO Register FOO
+///     /// Defines as Read/Write register
 ///     FOO<ReadWrite<u32>@(0x3F20_0000)> {
 ///         /// This is a register field BAR
 ///         BAR OFFSET(3) BITS(3),
-///         /// This is a register field BAZ with enum like field values
+///         /// This is a register field BAZ.
+///         /// It contains enum like field value definitions
 ///         BAZ OFFSET(6) BITS(3) [
 ///             /// This is a value of the register field
 ///             VAL1 = 0b000,
@@ -129,11 +131,11 @@ macro_rules! register_field_values {
 #[macro_export]
 macro_rules! define_mmio_register {
     // REGISTER_NAME<ReadWrite<TYPE>@ADDRESS> { FIELD OFFSET(num) BITS(num) [ VALUE: val ] }
-    ($($(#[doc = $rdoc:expr])? $vis:vis $name:ident<$access:ident<$t:ty>@($addr:expr)> $(
+    ($($(#[doc = $rdoc:expr])* $vis:vis $name:ident<$access:ident<$t:ty>@($addr:expr)> $(
         { $(
-                $(#[doc = $fdoc:expr])?
+                $(#[doc = $fdoc:expr])*
                 $field:ident OFFSET($offset:literal) $(BITS($bits:literal))?
-                $([$($(#[doc = $fvdoc:expr])? $enum:ident = $value:expr),*])?
+                $([$($(#[doc = $fvdoc:expr])* $enum:ident = $value:expr),*])?
         ),* }
     )?),*) => {
         $(
@@ -142,11 +144,11 @@ macro_rules! define_mmio_register {
             $vis mod $name {
                 use $crate::*;
                 use super::*;
-                $(#[doc = $rdoc])?
+                $(#[doc = $rdoc])*
                 pub const Register: $access<$t> = $access::<$t>::new($addr);
                 $(
                     $(
-                        $(#[doc = $fdoc])?
+                        $(#[doc = $fdoc])*
                         $crate::register_field!($t, $field, $offset $(, $bits)?);
                         pub mod $field {
                             use super::*;
@@ -157,7 +159,7 @@ macro_rules! define_mmio_register {
                                 RegisterFieldValue::<$t>::new($field, value)
                             }
                             $(
-                                $crate::register_field_values!($field, $t, $($($fvdoc)?, $enum = $value),*);
+                                $crate::register_field_values!($field, $t, $($($fvdoc)*, $enum = $value),*);
                             )*
                         }
                     )*
