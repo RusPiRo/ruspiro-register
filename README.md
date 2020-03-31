@@ -13,7 +13,7 @@ This crate also provides definitions for some aarch64 and aarch32 cp15 system re
 To use this crate simply add the dependency to your ``Cargo.toml`` file:
 ```
 [dependencies]
-ruspiro-register = "0.3"
+ruspiro-register = "0.4"
 ```
 
 In any rust file the register could be defined with their access type, size, address and optional a detailed field definition.

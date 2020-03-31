@@ -1,4 +1,8 @@
 # Changelog
+## :pizza: v0.4.2
+  - ### :detective: Fixes
+    - Fix the offset values in the AARCH32 DACR register definition.
+    
 ## :pizza: v0.4.1
   - ### :detective: Fixes
     - Fix issue that only single line comments were allowed in ``define_mmio_register!`` macro expansion
