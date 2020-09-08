@@ -13,8 +13,10 @@
 /// Helper macro to define the fields a register may contain of.<br>
 /// This is typically part of the register definition and will be applied there. It's not intended for use outside
 /// of a register definition.
+
 #[doc(hidden)]
 #[macro_export]
+
 macro_rules! register_field {
     ($t:ty, $field:ident, $offset:expr) => {
         #[allow(unused_variables, dead_code)]
@@ -408,7 +410,7 @@ macro_rules! define_aarch64_register {
         pub fn get() -> $t {
             let raw_value: $t;
             unsafe {
-                asm!(concat!("mrs $0,", stringify!($name)):"=r"(raw_value):::"volatile")
+                llvm_asm!(concat!("mrs $0,", stringify!($name)):"=r"(raw_value):::"volatile")
             };
             raw_value
         }
@@ -417,7 +419,7 @@ macro_rules! define_aarch64_register {
         #[inline]
         pub fn set(raw_value: $t) {
             unsafe {
-                asm!(concat!("msr ", stringify!($name) , ", $0 ")::"r"(raw_value)::"volatile")
+                llvm_asm!(concat!("msr ", stringify!($name) , ", $0 ")::"r"(raw_value)::"volatile")
             }
         }
 
@@ -520,7 +522,7 @@ macro_rules! define_aarch32_register {
         pub fn get() -> u32 {
             let raw_value: u32;
             unsafe {
-                asm!(concat!("mrc p15, ",
+                llvm_asm!(concat!("mrc p15, ",
                              stringify!($op1),
                              ", $0 , ",
                              stringify!($crn), ", ",
@@ -533,7 +535,7 @@ macro_rules! define_aarch32_register {
         #[inline]
         pub fn set(raw_value: u32) {
             unsafe {
-                asm!(concat!("mcr p15, ",
+                llvm_asm!(concat!("mcr p15, ",
                              stringify!($op1),
                              ", $0 , ",
                             stringify!($crn), ", ",

@@ -6,7 +6,7 @@
  **********************************************************************************************************************/
 #![doc(html_root_url = "https://docs.rs/ruspiro-register/0.4.2")]
 #![no_std]
-#![feature(asm, const_fn, doc_cfg)]
+#![feature(llvm_asm, const_fn, doc_cfg)]
 
 //! # System and MMIO register access
 //! ## System register access

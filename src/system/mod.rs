@@ -23,29 +23,29 @@ pub use aarch32::*;
 /// assembly NOP instruction
 #[inline(always)]
 pub fn nop() {
-    unsafe { asm!("nop"::::"volatile") };
+    unsafe { llvm_asm!("nop"::::"volatile") };
 }
 
 /// assembly WFE instruction
 #[inline(always)]
 pub fn wfe() {
-    unsafe { asm!("wfe") };
+    unsafe { llvm_asm!("wfe") };
 }
 
 /// assembly ISB instruction
 #[inline(always)]
 pub fn isb() {
-    unsafe { asm!("isb sy") };
+    unsafe { llvm_asm!("isb sy") };
 }
 
 /// assembly DSB instruction
 #[inline(always)]
 pub fn dsb() {
-    unsafe { asm!("dsb sy") };
+    unsafe { llvm_asm!("dsb sy") };
 }
 
 /// assembly DSB instruction
 #[inline(always)]
 pub fn dmb() {
-    unsafe { asm!("dmb sy") };
+    unsafe { llvm_asm!("dmb sy") };
 }
