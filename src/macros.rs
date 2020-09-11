@@ -342,7 +342,7 @@ macro_rules! impl_system_register_rw {
 ///
 /// # Examples
 /// ```no_run
-/// # #![feature(asm)]
+/// # #![feature(llvm_asm)]
 /// # use ruspiro_register::*;
 ///
 /// define_aarch64_register!(
@@ -458,7 +458,7 @@ macro_rules! define_aarch64_register {
 ///
 /// # Examples
 /// ```no_run
-/// # #![feature(asm)]
+/// # #![feature(llvm_asm)]
 /// # use ruspiro_register::*;
 /// define_aarch32_register!(
 ///     /// This is a aarch32 register
