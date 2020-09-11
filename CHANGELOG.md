@@ -1,4 +1,9 @@
 # Changelog
+## :banana: v0.4.3
+  - ### :detective: Fixes
+    - remove `asm!` macro usages and replace with `llvm_asm!`
+    - use `cargo make` to stabilize cross-platform builds
+    
 ## :pizza: v0.4.2
   - ### :detective: Fixes
     - Fix the offset values in the AARCH32 DACR register definition.
