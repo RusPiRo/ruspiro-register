@@ -71,7 +71,7 @@ macro_rules! registernew_impl {
 }
 
 macro_rules! registerget_impl {
-    () => (
+    () => {
         /// Read raw content of a register.
         #[inline]
         pub fn get(&self) -> T {
@@ -93,11 +93,11 @@ macro_rules! registerget_impl {
                 value: self.read(field),
             }
         }
-    )
+    }
 }
 
 macro_rules! registerset_impl {
-    () => (
+    () => {
         /// Write raw content value to the register.
         #[inline]
         pub fn set(&self, value: T) {
@@ -116,7 +116,7 @@ macro_rules! registerset_impl {
         pub fn write_value(&self, fieldvalue: RegisterFieldValue<T>) {
             self.write(fieldvalue.field, fieldvalue.value);
         }
-    )
+    }
 }
 
 impl<T: RegisterType> ReadOnly<T> {
