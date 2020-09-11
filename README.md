@@ -11,7 +11,7 @@ This crate also provides definitions for some aarch64 and aarch32 cp15 system re
 ## Usage
 
 To use this crate simply add the dependency to your ``Cargo.toml`` file:
-```
+```toml
 [dependencies]
 ruspiro-register = "0.4"
 ```
@@ -19,7 +19,7 @@ ruspiro-register = "0.4"
 In any rust file the register could be defined with their access type, size, address and optional a detailed field definition.
 The register access types are ``ReadOnly``, ``WriteOnly`` and ``ReadWrite``. The supported register sizes are `u8`, ``u16``, ``u32``, ``u64``.
 
-```
+```rust
 use ruspiro_register::*;
 
 define_mmio_register! [
@@ -42,7 +42,7 @@ fn main() {
 ```
 
 If access to the system registers is needed this could be done like so:
-```
+```rust
 use ruspiro_register::system::*;
 
 fn main64() {
