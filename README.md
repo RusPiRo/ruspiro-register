@@ -1,9 +1,8 @@
-# Register abstraction crate for the RusPiRo kernel
+# RusPiRo Register
 
-This crate provides easy to use and compile time safe access abstraction to MMIO (memory mapped input output) registers of the Raspberry Pi.
-This crate also provides definitions for some aarch64 and aarch32 cp15 system register. Whether the aarch64 or aarch32 register are available depends on the target architecture used while building this crate.
+The crate provides the definitions to conviniently work with register field values that are typically presented by a set of bit fields.
 
-[![Travis-CI Status](https://api.travis-ci.org/RusPiRo/ruspiro-register.svg?branch=master)](https://travis-ci.org/RusPiRo/ruspiro-register)
+[![Travis-CI Status](https://api.travis-ci.org/RusPiRo/ruspiro-register.svg?branch=release)](https://travis-ci.org/RusPiRo/ruspiro-register)
 [![Latest Version](https://img.shields.io/crates/v/ruspiro-register.svg)](https://crates.io/crates/ruspiro-register)
 [![Documentation](https://docs.rs/ruspiro-register/badge.svg)](https://docs.rs/ruspiro-register)
 [![License](https://img.shields.io/crates/l/ruspiro-register.svg)](https://github.com/RusPiRo/ruspiro-register#license)
@@ -11,54 +10,49 @@ This crate also provides definitions for some aarch64 and aarch32 cp15 system re
 ## Usage
 
 To use this crate simply add the dependency to your ``Cargo.toml`` file:
+
 ```toml
 [dependencies]
-ruspiro-register = "0.4"
+ruspiro-register = "0.5.0"
 ```
 
-In any rust file the register could be defined with their access type, size, address and optional a detailed field definition.
-The register access types are ``ReadOnly``, ``WriteOnly`` and ``ReadWrite``. The supported register sizes are `u8`, ``u16``, ``u32``, ``u64``.
+A single register field is specified with its bit mask and the bit shift. The `RegisterField` structure can be instantiated for the types `u8`, `u16`, `u32` and `u64`.
 
 ```rust
 use ruspiro_register::*;
 
-define_mmio_register! [
-    RO_REGISTER<ReadOnly<u8>@(0xFF00_0000)>,
-    WO_REGISTER<WriteOnly<u16>@(0xFF00_0004)> {
-        FLAG1   OFFSET(0) BITS(2),
-        FLAG2   OFFSET(2),
-        FLAG3   OFFSET(3) BITS(4)
-    },
-    RW_REGISTER<ReadWrite<u32>@(0xFF00_0008)> 
-];
+fn main() {
+    let field = RegisterField::<u32>::new(0x3, 6);
+}
+```
+
+To represent a specific value of a register field the `RegisterFieldValue` structure is used. It is available for the same scalar types as the `RegisterField`: `u8`, `u16`, `u32` and `u64`.
+
+```rust
+use ruspiro_register::*;
 
 fn main() {
-    let _ = RO_REGISTER::Register.get(); // read raw value from register
-
-    WO_REGISTER::Register.write_value(WO_REGISTER::FLAG3::with_value(0b1010)); // write only field FLAG3 into the register
-    
-    RW_REGISTER::Register.set(0xFFF); // write raw value to register
+    let field = RegisterField::<u8>::new(0x3, 2);
+    // the value to the regsiter field will be shifted and masked internally
+    // so it will be provided without any shifting
+    let value = RegisterFieldValue::<u8>::new(field, 0b10);
+    println!("{:?}", value);
 }
 ```
 
-If access to the system registers is needed this could be done like so:
-```rust
-use ruspiro_register::system::*;
+The register field value printed will look like this then:
 
-fn main64() {
-    // update the system control register of EL2 in aarch64 mode to deactivate the MMU
-    sctlr_el2::write(
-        sctlr::M::DISABLE
-    );
-}
-
-fn main32() {
-    // update the system control register in aarch32 mode to deactivate the MMU
-    sctlr::write(
-        sctlr::M::DISABLE
-    );
-}
+```text
+RegisterFieldValue { field: RegisterField {
+    Bits: [3:2]
+    Mask: 0b1100
+}, value: 2, raw_value: 8 }
 ```
+
+It is quite unlikely those definitions will be directly used as the represantation of a full register with its fields depends on the type of the register and the implementation of the functions to modify the register contents.
+
+Typically macros will be used to reduce the complexity of the register definitions. Examples can be seen in the [ruspiro-mmio-register](https://crates.io/crates/ruspiro-mmio-register) and the [ruspiro-arch-aarch64](https://crates.io/crates/ruspiro-arch-aarch64) crates.
 
 ## License
-Licensed under Apache License, Version 2.0, ([LICENSE](LICENSE) or http://www.apache.org/licenses/LICENSE-2.0)
+
+Licensed under Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0) or MIT ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)) at your choice.
