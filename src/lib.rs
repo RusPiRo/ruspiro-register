@@ -1,7 +1,7 @@
 /***********************************************************************************************************************
  * Copyright (c) 2019 by the authors
  * 
- * Author: 2ndTaleStudio <43264484+2ndTaleStudio@users.noreply.github.com>
+ * Author: André Borrmann <pspwizard@gmx.de>
  * License: Apache License 2.0 / MIT
  **********************************************************************************************************************/
 #![doc(html_root_url = "https://docs.rs/ruspiro-register/||VERSION||")]
