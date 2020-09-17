@@ -10,11 +10,16 @@
 
 //! # RusPiRo Register
 //! 
-//! Start documenting your library here and implementing below
+//! The crate provides the definitions to conviniently work with register field values that are typically presented by 
+//! a set of bit fields. This crate will likely be used in other crates whichspecifies the actual registers and their
+//! structure using macros. Examples are [ruspiro-mmio-register](https://crates.io/crates/ruspiro-mmio-register) and
+//! [ruspiro-arch-aarch64](https://crates.io/crates/ruspiro-arch-aarch64)
 
 use core::cmp::PartialEq;
 use core::ops::{BitAnd, BitOr, Not, Shl, Shr};
 use core::fmt;
+
+mod macros;
 
 /// This trait is used to describe the register size/length as type specifier. The trait is only implemented for the
 /// internal types **u8**, **u16**, **u32** and **u64** to ensure safe register access sizes with compile time checking
@@ -115,7 +120,17 @@ macro_rules! registerfield_impl {
             pub const fn new(field: RegisterField<$t>, value: $t) -> Self {
                 RegisterFieldValue {
                     field,
-                    value: value & field.mask //<< field.shift
+                    value: value & field.mask
+                }
+            }
+
+            /// Create a new fieldvalue based on the field definition and the raw value given
+            #[inline]
+            #[allow(dead_code)]
+            pub const fn from_raw(field: RegisterField<$t>, raw_value: $t) -> Self {
+                RegisterFieldValue {
+                    field,
+                    value: (raw_value >> field.shift) & field.mask
                 }
             }
 
