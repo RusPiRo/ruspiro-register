@@ -1,4 +1,20 @@
 # Changelog
+
+## :peach: v0.5.0
+
+  This version contains a major refactoring. The whole crate has been split into actually 3 crates in total. The `ruspiro-register` crate continues to contain the definitions of `RegisterType`, `RegisterField` and `RegisterFieldValue` only. Those definitions are highly generic and can be usefull in various other crates that do not require the other functionality originally beeing part of this crate as well.
+
+  > The system register specific functions and API is moved into the `ruspiro-arch-aarch64` crate.
+  >
+  > The MMIO register specific functions and API is moved into the `ruspiro-mmio-register` crate.
+
+  Both crates utilizes this one for the register type and field definitions. 
+
+  - ### :wrench: Maintenance
+
+    - Whole refactoring of the crate.
+    - Introduce a proper Travis-CI pipeline setting to support the lifecycle of the crate incl. publishing to crates.io
+
 ## :banana: v0.4.3
   - ### :detective: Fixes
     - remove `asm!` macro usages and replace with `llvm_asm!`
