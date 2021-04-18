@@ -15,7 +15,6 @@ edition = "2018"
 exclude = ["Makefile.toml"]
 
 [badges]
-travis-ci = { repository = "RusPiRo/ruspiro-register", branch = "release" }
 maintenance = { status = "actively-developed" }
 is-it-maintained-open-issues = { repository = "RusPiRo/ruspiro-register" }
 
