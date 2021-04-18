@@ -1,7 +1,7 @@
 [package]
 name = "ruspiro-register"
 authors = ["André Borrmann <pspwizard@gmx.de>"]
-version = "0.5.0" # remember to update html_root_url in lib.rs
+version = "0.5.1" # remember to update html_root_url in lib.rs
 description = """
 The crate provides the definitions to conviniently work with register field values that are typically presented by a set of bit fields.
 """
@@ -12,7 +12,7 @@ documentation = "https://docs.rs/ruspiro-register/||VERSION||"
 categories = ["no-std", "embedded"]
 keywords = ["ruspiro", "register", "registerfields"]
 edition = "2018"
-exclude = [".travis.yml", "Makefile.toml"]
+exclude = ["Makefile.toml"]
 
 [badges]
 travis-ci = { repository = "RusPiRo/ruspiro-register", branch = "release" }
@@ -28,9 +28,9 @@ is-it-maintained-open-issues = { repository = "RusPiRo/ruspiro-register" }
 [dependencies]
 # list other dependencies here
 # for every RUSPIRO dependency a corresponding entry
-# in the [patch.crates-io] section pointing to the actual master branch
-# of this crate is required - example:
-# ruspiro-register = "0.4"
+# in the [patch.crates-io] section pointing to the actual development branch
+# of this crate is recommended - example:
+# ruspiro-dummy = "0.4"
 
 [features]
 ruspiro_pi3 = [ ]
@@ -40,4 +40,4 @@ ruspiro_pi3 = [ ]
 # this increases PR build stability if dependent crates got updated but are not
 # published to crates.io yet.
 # !This section need to be always the last in the Cargo.toml file!
-# ruspiro-register = { git = "https://github.com/RusPiRo/ruspiro-register.git" }
+# ruspiro-dummy = { git = "https://github.com/RusPiRo/ruspiro-dummy.git", branch = "development" }
