@@ -2,7 +2,7 @@
 
 The crate provides the definitions to conviniently work with register field values that are typically presented by a set of bit fields.
 
-[![Travis-CI Status](https://api.travis-ci.org/RusPiRo/ruspiro-register.svg?branch=release)](https://travis-ci.org/RusPiRo/ruspiro-register)
+![CI](https://github.com/RusPiRo/ruspiro-register/workflows/CI/badge.svg?branch=development)
 [![Latest Version](https://img.shields.io/crates/v/ruspiro-register.svg)](https://crates.io/crates/ruspiro-register)
 [![Documentation](https://docs.rs/ruspiro-register/badge.svg)](https://docs.rs/ruspiro-register)
 [![License](https://img.shields.io/crates/l/ruspiro-register.svg)](https://github.com/RusPiRo/ruspiro-register#license)
@@ -13,7 +13,7 @@ To use this crate simply add the dependency to your ``Cargo.toml`` file:
 
 ```toml
 [dependencies]
-ruspiro-register = "0.5.0"
+ruspiro-register = "||VERSION||"
 ```
 
 A single register field is specified with its bit mask and the bit shift. The `RegisterField` structure can be instantiated for the types `u8`, `u16`, `u32` and `u64`.
@@ -49,9 +49,7 @@ RegisterFieldValue { field: RegisterField {
 }, value: 2, raw_value: 8 }
 ```
 
-It is quite unlikely those definitions will be directly used as the represantation of a full register with its fields depends on the type of the register and the implementation of the functions to modify the register contents.
-
-Typically macros will be used to reduce the complexity of the register definitions. Examples can be seen in the [ruspiro-mmio-register](https://crates.io/crates/ruspiro-mmio-register) and the [ruspiro-arch-aarch64](https://crates.io/crates/ruspiro-arch-aarch64) crates.
+It is quite unlikely those definitions will be directly used as the represantation of a full register with all its fields. Typically macros will be used to reduce the complexity of the register definitions. Examples can be found in the [ruspiro-mmio-register](https://crates.io/crates/ruspiro-mmio-register) and the [ruspiro-arch-aarch64](https://crates.io/crates/ruspiro-arch-aarch64) crates.
 
 ## License
 

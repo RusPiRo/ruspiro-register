@@ -11,8 +11,9 @@
 //! # RusPiRo Register
 //! 
 //! The crate provides the definitions to conviniently work with register field values that are typically presented by 
-//! a set of bit fields. This crate will likely be used in other crates whichspecifies the actual registers and their
-//! structure using macros. Examples are [ruspiro-mmio-register](https://crates.io/crates/ruspiro-mmio-register) and
+//! a set of bit fields. This crate will likely be used in other crates that specifies the actual registers and their
+//! structure using macros. Examples can be found at
+//! [ruspiro-mmio-register](https://crates.io/crates/ruspiro-mmio-register) and
 //! [ruspiro-arch-aarch64](https://crates.io/crates/ruspiro-arch-aarch64)
 
 use core::cmp::PartialEq;
