@@ -1,5 +1,14 @@
 # Changelog
 
+## :peach: v0.5.1
+
+This is mainly a maintenance version migrating the build pipeline to GitHub Actions.
+
+- ### :wrench: Maintenance
+
+  - move CI/CD to github actions
+  - define a custom build target that suites RaspBerry Pi Aarch64
+
 ## :peach: v0.5.0
 
   This version contains a major refactoring. The whole crate has been split into actually 3 crates in total. The `ruspiro-register` crate continues to contain the definitions of `RegisterType`, `RegisterField` and `RegisterFieldValue` only. Those definitions are highly generic and can be usefull in various other crates that do not require the other functionality originally beeing part of this crate as well.

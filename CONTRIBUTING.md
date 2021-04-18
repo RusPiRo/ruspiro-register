@@ -6,7 +6,7 @@
 
 We use github to host code, to track issues and feature requests. Pull requests are the best way to propose changes to the codebase. We actively welcome your pull requests:
 
-1. Fork the repo and create your branch from `master`.
+1. Fork the repo and create your branch from `development`.
 2. Implement your changes.
 3. Run `cargo fmt` and `cargo clippy` to ensure consistant code style
 4. If applicable provide unit tests
