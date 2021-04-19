@@ -1,5 +1,11 @@
 # Changelog
 
+## :peach: v0.5.3
+
+- ### :wrench: Maintenance
+
+  - fix issue generating the documentation at doc.rs which failes with a custom build target. So fall-back at docu generation to the standard target `aarch64-unknown-linux-gnu`
+  
 ## :peach: v0.5.2
 
 - ### :wrench: Maintenance
