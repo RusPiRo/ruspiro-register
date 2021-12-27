@@ -12,16 +12,16 @@
 #[doc(hidden)]
 #[macro_export]
 macro_rules! register_field {
-    ($t:ty, $field:ident, $offset:expr) => {
-        #[allow(unused_variables, dead_code)]
-        #[doc(hidden)]
-        pub const $field: RegisterField<$t> = RegisterField::<$t>::new(1, $offset);
-    };
-    ($t:ty, $field:ident, $offset:expr, $bits:expr) => {
-        #[allow(unused_variables, dead_code)]
-        #[doc(hidden)]
-        pub const $field: RegisterField<$t> = RegisterField::<$t>::new((1 << $bits) - 1, $offset);
-    };
+  ($t:ty, $field:ident, $offset:expr) => {
+    #[allow(unused_variables, dead_code)]
+    #[doc(hidden)]
+    pub const $field: RegisterField<$t> = RegisterField::<$t>::new(1, $offset);
+  };
+  ($t:ty, $field:ident, $offset:expr, $bits:expr) => {
+    #[allow(unused_variables, dead_code)]
+    #[doc(hidden)]
+    pub const $field: RegisterField<$t> = RegisterField::<$t>::new((1 << $bits) - 1, $offset);
+  };
 }
 
 /// Helper macro to define constant register field values a specific register field can contain.
