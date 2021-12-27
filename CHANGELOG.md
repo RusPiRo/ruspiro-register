@@ -1,5 +1,13 @@
 # Changelog
 
+## :peach: v0.5.5
+
+- ### :wrench: Maintenance
+
+  - update to build with the latest nightly version and use Rust edition 2021
+  - remove custom build target for the library build
+  - minor adjustments to the Makefile and CI build scripts
+
 ## :peach: v0.5.4
 
 - ### :wrench: Maintenance
