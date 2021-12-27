@@ -1,38 +1,37 @@
 /***********************************************************************************************************************
  * Copyright (c) 2019 by the authors
- * 
+ *
  * Author: André Borrmann <pspwizard@gmx.de>
  * License: Apache License 2.0 / MIT
  **********************************************************************************************************************/
 #![doc(html_root_url = "https://docs.rs/ruspiro-register/||VERSION||")]
-// we require to run with 'std' in unit tests and doc tests to have an allocator in place
-#![cfg_attr(not(any(test, doctest)), no_std)]
+#![no_std]
 
 //! # RusPiRo Register
-//! 
-//! The crate provides the definitions to conviniently work with register field values that are typically presented by 
+//!
+//! The crate provides the definitions to conviniently work with register field values that are typically presented by
 //! a set of bit fields. This crate will likely be used in other crates that specifies the actual registers and their
 //! structure using macros. Examples can be found at
 //! [ruspiro-mmio-register](https://crates.io/crates/ruspiro-mmio-register) and
 //! [ruspiro-arch-aarch64](https://crates.io/crates/ruspiro-arch-aarch64)
 
 use core::cmp::PartialEq;
-use core::ops::{BitAnd, BitOr, Not, Shl, Shr};
 use core::fmt;
+use core::ops::{BitAnd, BitOr, Not, Shl, Shr};
 
 mod macros;
 
 /// This trait is used to describe the register size/length as type specifier. The trait is only implemented for the
 /// internal types **u8**, **u16**, **u32** and **u64** to ensure safe register access sizes with compile time checking
 pub trait RegisterType:
-    Copy
-    + Clone
-    + PartialEq
-    + BitOr<Output = Self>
-    + BitAnd<Output = Self>
-    + Not<Output = Self>
-    + Shl<Self, Output = Self>
-    + Shr<Self, Output = Self>
+  Copy
+  + Clone
+  + PartialEq
+  + BitOr<Output = Self>
+  + BitAnd<Output = Self>
+  + Not<Output = Self>
+  + Shl<Self, Output = Self>
+  + Shr<Self, Output = Self>
 {
 }
 
@@ -52,18 +51,18 @@ registertype_impl![u8, u16, u32, u64];
 /// when constructing the field definition the stored mask is already shifted by the shift value
 #[derive(Copy, Clone)]
 pub struct RegisterField<T: RegisterType> {
-    mask: T,
-    shift: T,
+  mask: T,
+  shift: T,
 }
 
 /// Definition of a specific fieldvalue of a regiser. This structure allows to combine field values with bit operators
 /// like ``|`` and ``&`` to build the final value that should be written to a register
 #[derive(Copy, Clone)]
 pub struct RegisterFieldValue<T: RegisterType> {
-    /// register field definition
-    field: RegisterField<T>,
-    /// register field value
-    value: T,
+  /// register field definition
+  field: RegisterField<T>,
+  /// register field value
+  value: T,
 }
 
 // Internal helper macro to implement:
@@ -206,73 +205,3 @@ macro_rules! registerfield_impl {
 }
 
 registerfield_impl![u8, u16, u32, u64];
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn register_field_mask() {
-        let field = RegisterField::<u32>::new(0x3, 6);
-        println!("{:?}", field);
-        assert_eq!(field.mask(), 0x3 << 6);
-    }
-
-    #[test]
-    fn register_field_shift() {
-        let field = RegisterField::<u16>::new(0x3, 3);
-        println!("{:?}", field);
-        assert_eq!(field.shift(), 3);
-    }
-
-    #[test]
-    fn register_field_value() {
-        let value = RegisterFieldValue::<u32>::new(RegisterField::<u32>::new(0x3, 6), 2);
-        println!("{:?}", value);
-        assert_eq!(value.value(), 2);
-        assert_eq!(value.raw_value(), 2 << 6);
-    }
-
-    #[test]
-    fn register_field_value_eq() {
-        let value1 = RegisterFieldValue::<u32>::new(
-            RegisterField::<u32>::new(3, 0), 7
-        );
-        let value2 = RegisterFieldValue::<u32>::new(
-            RegisterField::<u32>::new(3, 0), 7
-        );
-        println!("value1: {:?} =? value2: {:?}", value1, value2);
-        assert_eq!(value1, value2);
-    }
-
-    #[test]
-    fn register_field_value_or() {
-        let value1 = RegisterFieldValue::<u16>::new(RegisterField::<u16>::new(0xF, 0), 0xA);
-        let value2 = RegisterFieldValue::<u16>::new(RegisterField::<u16>::new(0x3, 4), 0x2);
-        let value_or = value1 | value2;
-
-        println!("{:?}", value_or);
-        assert_eq!(value_or.value(), 0xA | (0x2 << 4));
-        assert_eq!(value_or.raw_value(), 0xA | (0x2 << 4));
-    }
-
-    #[test]
-    fn register_field_value_and() {
-        let value1 = RegisterFieldValue::<u8>::new(RegisterField::<u8>::new(0xF, 0), 0xA);
-        let value2 = RegisterFieldValue::<u8>::new(RegisterField::<u8>::new(0x3, 2), 0x2);
-        let value_and = value1 & value2;
-
-        println!("{:?}", value_and);
-        assert_eq!(value_and.value(), 0xA & (0x2 << 2));
-        assert_eq!(value_and.raw_value(), 0xA & (0x2 << 2));
-    }
-
-    #[test]
-    fn register_value_update() {
-        let field_value = RegisterFieldValue::<u32>::new(RegisterField::<u32>::new(0x3, 8), 0b01);
-        let register_value: u32 = 0b1_1010_0011_0010;
-        let new_value: u32 = (register_value & !field_value.mask()) | field_value.raw_value();
-
-        assert_eq!(new_value, 0b1_1001_0011_0010);
-    }
-}

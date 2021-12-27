@@ -1,7 +1,7 @@
 [package]
 name = "ruspiro-register"
 authors = ["André Borrmann <pspwizard@gmx.de>"]
-version = "0.5.4" # remember to update html_root_url in lib.rs
+version = "0.5.5" # remember to update html_root_url in lib.rs
 description = """
 The crate provides the definitions to conviniently work with register field values that are typically presented by a set of bit fields.
 """
@@ -11,33 +11,16 @@ repository = "https://github.com/RusPiRo/ruspiro-register/tree/v||VERSION||"
 documentation = "https://docs.rs/ruspiro-register/||VERSION||"
 categories = ["no-std", "embedded"]
 keywords = ["ruspiro", "register", "registerfields"]
-edition = "2018"
-exclude = ["Makefile.toml", ".cargo/config.toml"]
+edition = "2021"
+exclude = ["Makefile.toml", ".cargo/config.toml", ".github"]
 
 [badges]
 maintenance = { status = "actively-developed" }
-is-it-maintained-open-issues = { repository = "RusPiRo/ruspiro-register" }
 
 [lib]
 
-[build-dependencies]
-# uncomment this if a build.rs script should be run as part of the build process
-# cc = "1.0"
-
 [dependencies]
-# list other dependencies here
-# for every RUSPIRO dependency a corresponding entry
-# in the [patch.crates-io] section pointing to the actual development branch
-# of this crate is recommended - example:
-# ruspiro-dummy = "0.4"
 
 [package.metadata.docs.rs]
 default-target = "aarch64-unknown-linux-gnu"
 features = []
-
-[patch.crates-io]
-# we require an entry for each dependent RUSPIRO crate here
-# this increases PR build stability if dependent crates got updated but are not
-# published to crates.io yet.
-# !This section need to be always the last in the Cargo.toml file!
-# ruspiro-dummy = { git = "https://github.com/RusPiRo/ruspiro-dummy.git", branch = "development" }
